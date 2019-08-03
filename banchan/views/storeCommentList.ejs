@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+            <fieldset>
+                <a href="/store/<%= store.url_key %>">가게홈</a>
+            </fieldset>
+        </div>
+        <div class="columnSeventyFive">
+            <fieldset>
+                <form method="POST">
+                    내용 <input type="textarea" name="content" value="content" placeholder="내용을입력해주세요"><br>
+                    zero <input type="radio" name="star" value="0">
+                    one <input type="radio" name="star" value="1">
+                    two <input type="radio" name="star" value="2">
+                    three <input type="radio" name="star" value="3">
+                    four <input type="radio" name="star" value="4">
+                    five <input type="radio" name="star" value="5">
+                    <button type="submit">글 작성완료</button>
+                </form>
+            </fieldset>
+            <table class="table_list">
+            <h3>총갯수 : <%= comments.count %></h3>
+            <thead>
+                <tr>
+                    <th scope="cols">author</th>
+                    <th scope="cols">content</th>
+                    <th scope="cols">timestamp</th>
+                    <th scope="cols">star</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% comments.rows.forEach(comment => { %>
+                    <tr>
+                        <th scope="row"><%= comment.author.nickname %></td>
+                        <td><%= comment.content %></td>
+                        <td><%= comment.updatedAt %></td>
+                        <td><%= comment.stars %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        </div>
+        <div class="columnTen">
+            <fieldset>
+                <form method="GET">
+                    <select name="order">
+                        <option value="basic"></option>
+                        <option value="stars_DESC">좋은평순</option>
+                        <option value="stars_ASC">나쁜평순</option>
+                        <option value="date_DESC">시간순</option>
+                        <option value="date_ASC">시간역순</option>
+                    </select>
+                    <button type="submit">적용하기</button>
+                    <button type="reset">reset</button>
+                </form>
+            </fieldset>
+        </div>
+        <script>
+        </script>
+    </body>
+</html>

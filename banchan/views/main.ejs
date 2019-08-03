@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+    <div class="mainbody">
+        <% if(user && user.id) { %>
+            <p>user nickname: <%= user.nickname %></p>
+            <p>user isSaler: <%= user.isSaler %></p>
+            <p>user isValidate: <%= user.isValidate %></p>
+            <p>user isAdmin: <%= user.isAdmin %></p>
+        <% } else { %>
+            <p>Login require!</p>
+        <% } %>
+        <%= %>
+        <% if(recentStores) { %>
+            <% recentStores.forEach(store => { %>
+                <a href="/store/<%= store.url_key %>"><%= store.name %></a>
+            <% }); %>
+            <% console.log(recentStores);
+            %>
+        <% } else { %>
+            <p>최근에 본 가게가 없습니다.</p>
+        <% } %>
+        <%= %>
+    </div>
+    <script>
+    </script>
+    </body>
+</html>

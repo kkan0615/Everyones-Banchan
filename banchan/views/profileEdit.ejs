@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+            <a href="/profile/eidt">수정하기</a>
+        </div>
+        <div class="columnSeventyFive">
+            <%= user.nickname %>
+            <% if(!user.isValidate) { %>
+                <button type="button" onclick="validate()">이메일 인증하기</button>
+            <% } else { %>
+                <p>이메일 인증이 완료된 회원입니다.</p>
+            <% } %>
+            <%= %>
+        </div>
+        <div class="columnTen">
+        </div>
+    <script>
+        function validate() {
+            <% if(user && user.id) { %>
+                if(confirm('인증을 하고 싶습니까?')) {
+                var xhr = new XMLHttpRequest();
+                xhr.onload = function() {
+                    if(xhr.status === 200) {
+                        var result = JSON.parse(xhr.responseText).result;
+                        alert(result);
+                        location.reload();
+                    } else {
+                        console.error(xhr.responseText);
+                    }
+                };
+                xhr.open('POST','/profile/sendEmail/validation');
+                //xhr.setRequestHeader('Content-Type', 'application/json');
+                //xhr.send(JSON.stringify({ url_key: str, userId: id }));
+                xhr.send();
+            } else {
+                alert('You should click Yes to process next step');
+            }
+            <% } else { %>
+                alert('You should login');
+            <% } %>
+        }
+    </script>
+    </body>
+</html>

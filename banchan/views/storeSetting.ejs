@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+            <div class="leftSideNav">
+                <a href="/store/<%= store.url_key %>">가게홈</a>
+                <a href="/store/<%= store.url_key %>/setting/checkOrders">주문확인</a>
+                <a href="/store/<%= store.url_key %>/setting/productList">제품확인</a>
+                <a href="/store/<%= store.url_key %>/setting/editStoreDetail">가게 설정 변경</a>
+            </div>
+        </div>
+        <div class="columnSeventyFive">
+            <p>가게이름: <%= store.name %></p>
+            <p>manger: <%= store.manager.nickname %></p>
+            <p>제품수 : <%= store.products.length %></p>
+            <p>likes : <%= store.StoreLiker.length, %></p>
+            <p>storeComments : <%= store.storeComments.length %></p>
+        </div>
+        <div class="columnTen">
+        </div>
+        <script>
+        </script>
+    </body>
+</html>

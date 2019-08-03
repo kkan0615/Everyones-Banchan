@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+        </div>
+        <div class="columnSeventyFive">
+            <ul class="shows-list">
+                <% shows.rows.forEach(show => { %>
+                    <li>
+                        <a href="/store/<%= show.url_key %>"><img src="/uploads/<%= show.img %>" /></a>
+                        <h3><%= show.name %></h3>
+                        <p><%= show.introduction %></p>
+                    </li>
+                <% }); %>
+            </ul>
+        </div>
+        <div class="columnTen">
+        </div>
+        <style>
+            * {margin: 0; padding: 0;}
+
+            .shows-list {
+            margin: 20px;
+            }
+
+            .shows-list ul {
+            list-style-type: none;
+            width: 500px;
+            }
+
+            .shows-list h3 {
+            font: bold 20px/1.5 Helvetica, Verdana, sans-serif;
+            }
+
+            .shows-list li img {
+            float: left;
+            margin: 0 15px 0 0;
+            }
+
+            .shows-list li p {
+            font: 200 12px/1.5 Georgia, Times New Roman, serif;
+            }
+
+            .shows-list li {
+            padding: 10px;
+            overflow: auto;
+            }
+
+            .shows-list li:hover {
+            background: #eee;
+            cursor: pointer;
+            }
+        </style>
+    </body>
+</html>

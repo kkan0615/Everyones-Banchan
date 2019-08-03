@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+        </div>
+        <div class="columnSeventyFive">
+            <div>
+                <p id="new">No new item</p>
+            </div>
+            <div>
+                <table class="order_table">
+                    <thead>
+                        <tr>
+                            <th scope="cols"><input type="checkbox" name="select-all" id="select-all" />전부선택</th>
+                            <th scope="cols">img</th>
+                            <th scope="cols">title</th>
+                            <th scope="cols">price</th>
+                            <th scope="cols">quanity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% orders.forEach(order => { %>
+                            <tr>
+                                <td><input type="checkbox" name="orderCheckBox" value="<%= order.id %>"></td>
+                                <td><img src="/uploads/<%= order.product %>" alt="<%= order.product.name %>"></td>
+                                <th scope="row"><a href="/store/<%= order.store.url_key %>/product/<%= order.product.id %>"><%= order.product.name %></a></td>
+                                <% if(order.product.salePrice) { %>
+                                    <td><%= order.product.salePrice %></td>
+                                <% } else { %>
+                                    <td><%= order.product.orginalPrice %></td>
+                                <% } %>
+                                <td><%= order.quantity %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+                <input type="TEXT" name="deliveryCode" id="deliveryCode">
+                <button type="button" onclick="setDeliveryCode()">체크값 모두 변경</button>
+            </div>
+        </div>
+        <div class="columnTen">
+        </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+         var socket = io.connect('http://localhost:8001/store', {
+            path: '/socket.io'
+        });
+
+        socket.on('new', function(data) {
+            if(data.userId) {
+                document.getElementById("new").innerHTML = data.userId + '님이 주문을 하셨습니다.';
+            } else {
+                document.getElementById("new").innerHTML = data.code + '익명의 사용자가 주문하였습니다.';
+            }
+            document.getElementById("new").innerHTML += ' 새로고침 하여 확인 하실 수 있습니다.';
+        });
+
+        $('#select-all').click(function(event) {
+            if(this.checked) {
+                // Iterate each checkbox
+                $(':checkbox').each(function() {
+                    this.checked = true;
+                });
+            } else {
+                $(':checkbox').each(function() {
+                    this.checked = false;
+                });
+            }
+        });
+        function setDeliveryCode() {
+            var checkboxes = $("input[name=orderCheckBox]:checked");
+            var deliveryCode = document.getElementById("deliveryCode").value;
+            var orderUpdate = [];
+            for (var i = 0; i < checkboxes.length; i++) {
+                var order = {
+                    deliveryCode: deliveryCode,
+                    id: checkboxes[i].value,
+                }
+                orderUpdate.push(order);
+
+            }
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+                if(xhr.status === 200) {
+                    var result = JSON.parse(xhr.responseText).result;
+                    alert(result);
+                    location.reload();
+                } else {
+                    console.error(xhr.responseText);
+                }
+            };
+            xhr.open('PUT','/store/<%= store.url_key %>/setting/checkOrders');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({ orderUpdate: orderUpdate }));
+            //xhr.send();
+        }
+    </script>
+    </body>
+</html>

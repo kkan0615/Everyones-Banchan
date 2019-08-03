@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+    <div class="content">
+        <form method="POST" enctype="multipart/form-data">
+            name <input type="text" name="name" value="name"><br>
+            url_key <input type="text" name="url_key" value="url_key"><br>
+            introduction <input type="textarea" name="introduction" value="title"><br>
+            kinds <input type="text" name="kinds" value="반찬"><br>
+            cover <input type="file" id="img" name="img" multiple><br>
+            <button type="submit">submit</button>
+            <button type="reset">reset</button>
+        </form>
+    </div>
+    </body>
+</html>

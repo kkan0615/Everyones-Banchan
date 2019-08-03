@@ -1,0 +1,235 @@
+<div class="header">
+    <a href="/">모두의반찬</a>
+        <select id="search">
+            <option value="food">반찬이름</option>
+            <option value="store">가게이름</option>
+        </select>
+    <div class="autocomplete">
+        <input id="banchansearch" type="text" name="banchansearch" placeholder="찾고싶은반찬을입력해주세요">
+    </div>
+      <button type="submit" name="search" onclick="search()">search</button>
+</div>
+
+<div id="addtionalNav" class="addtionalNav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeAddtionalNav()">&times;</a>
+    <a href="/store/list">Store</a>
+    <a href="/food/list">Food</a>
+    <a href="/sale/list">SaleList</a>
+    <a href="#">CustomerServices</a>
+</div>
+<div class="navbar">
+<span class="addtionalSpan" onclick="openAddtionalNav()">&#9776; Category</span>
+  <a href="/">Home</a>
+    <div class="dropdown">
+    <button class="dropbtn">반찬
+        <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-content">
+        <a href="#">Link 1</a>
+        <a href="#">Link 2</a>
+        <a href="#">Link 3</a>
+    </div>
+  </div>
+    <div class="dropdown">
+    <button class="dropbtn">국/찌게
+
+    </button>
+    <div class="dropdown-content">
+        <a href="#">Link 1</a>
+        <a href="#">Link 2</a>
+        <a href="#">Link 3</a>
+    </div>
+  </div>
+  <div class="dropdown">
+    <button class="dropbtn">도시락류
+        <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-content">
+        <a href="#">Link 1</a>
+        <a href="#">Link 2</a>
+        <a href="#">Link 3</a>
+    </div>
+  </div>
+  <% if(user && user.id) { %>
+  <div class="megaDropDown">
+    <button class="megaDropDownbtn">Dropdown
+        <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="megaDropDown-content">
+      <div class="megaDropDown-row">
+        <div class="megaDropDown-account">
+            <h3>Category 1</h3>
+            <a href="/auth/logout">logout</a>
+            <a href="/profile/<%= user.id %>">profile</a>
+            <a href="/cart?id=<%= user.id %>">Basket</a>
+            <a href="/profile/orders">주문확인</a>
+        </div>
+        <div class="megaDropDown-nonaccount">
+          <h3>Category 2</h3>
+          <a href="#">Link 1</a>
+          <a href="#">Link 2</a>
+          <a href="#">Link 3</a>
+        </div>
+        <div class="megaDropDown-nonaccount">
+          <h3>Category 3</h3>
+          <a href="#">Link 1</a>
+          <a href="#">Link 2</a>
+          <a href="#">Link 3</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% } else { %>
+  <div class="megaDropDown">
+    <button class="megaDropDownbtn">Dropdown
+      <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="megaDropDown-content">
+      <div class="megaDropDown-row">
+        <div class="megaDropDown-account">
+          <h3>Category 1</h3>
+          <a href="/join">회원가입</a>
+          <a href="/login">Login</a>
+          <a href="/cart">Basket</a>
+        </div>
+        <div class="megaDropDown-nonaccount">
+        </div>
+        <div class="megaDropDown-nonaccount">
+        </div>
+      </div>
+    </div>
+  </div>
+  <% } %>
+  <%= %>
+</div>
+
+<script>
+/* https://www.w3schools.com/howto/howto_js_autocomplete.asp */
+function autocomplete(inp) {
+  /*the autocomplete function takes two arguments,
+  the text field element and an array of possible autocompleted values:*/
+  var currentFocus;
+  /*execute a function when someone writes in the text field:*/
+  inp.addEventListener("input", function(e) {
+      var a, b, i, word = this.value;
+      /*close any already open lists of autocompleted values*/
+      closeAllLists();
+      if (!word) {
+        return false;
+      }
+      currentFocus = -1;
+      /*create a div element that will contain the items (values):*/
+      a = document.createElement("div");
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      /*append the div element as a child of the autocomplete container:*/
+      this.parentNode.appendChild(a);
+
+      var xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+          if(xhr.status === 200) {
+              var arr = JSON.parse(xhr.responseText).food;
+              console.log(arr[0].name);
+
+              for (i = 0; i < arr.length; i++) {
+                /*check if the item starts with the same letters as the text field value:*/
+                if (arr[i].name.substirng(0, word.length).toUpperCase() == word.toUpperCase()) {
+                  /*create a div element for each matching element:*/
+                  b = document.createElement("div");
+                  /*make the matching letters bold:*/
+                  b.innerHTML = "<strong>" + arr[i].name.substirng(0, word.length) + "</strong>";
+                  b.innerHTML += arr[i].substirng(word.length);
+                  /*insert a input field that will hold the current array item's value:*/
+                  b.innerHTML += "<input type='hidden' value='" + arr[i].name + "'>";
+                  /*execute a function when someone clicks on the item value (div element):*/
+                  b.addEventListener("click", function(e) {
+                      /*insert the value for the autocomplete text field:*/
+                      inp.value = this.getElementsByTagName("input")[0].value;
+                      /*close the list of autocompleted values,
+                      (or any other open lists of autocompleted values:*/
+                      closeAllLists();
+                  });
+                  a.appendChild(b);
+                }
+              }
+          } else {
+              console.error(xhr.responseText);
+          }
+      }
+      xhr.open('POST','/autocomplete');
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify({ word: word }));
+  });
+  /*execute a function presses a key on the keyboard:*/
+  inp.addEventListener("keydown", function(e) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 40) {
+        /*If the arrow DOWN key is pressed,
+        increase the currentFocus variable:*/
+        currentFocus++;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 38) { //up
+        /*If the arrow UP key is pressed,
+        decrease the currentFocus variable:*/
+        currentFocus--;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 13) {
+        /*If the ENTER key is pressed, prevent the form from being submitted,*/
+        e.preventDefault();
+        if (currentFocus > -1) {
+          /*and simulate a click on the "active" item:*/
+          if (x) x[currentFocus].click();
+        }
+      }
+  });
+  function addActive(x) {
+    /*a function to classify an item as "active":*/
+    if (!x) return false;
+    /*start by removing the "active" class on all items:*/
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    /*add class "autocomplete-active":*/
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function removeActive(x) {
+    /*a function to remove the "active" class from all autocomplete items:*/
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+  function closeAllLists(elmnt) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+  /*execute a function when someone clicks in the document:*/
+  document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+  });
+}
+
+autocomplete(document.getElementById("banchansearch"));
+
+function openAddtionalNav() {
+    document.getElementById("addtionalNav").style.width = "250px";
+}
+
+function closeAddtionalNav() {
+    document.getElementById("addtionalNav").style.width = "0";
+}
+
+function search() {
+    var search = $('#search').val();
+    var word = $('#banchansearch').val();
+    location.href="/search?search=" + search + "&word=" + word;
+}
+</script>

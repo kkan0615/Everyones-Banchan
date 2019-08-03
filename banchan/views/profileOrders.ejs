@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+        </div>
+        <div class="columnSeventyFive">
+        <% console.log(orders);
+         %>
+            <% if(orders) { %>
+                <% orders.forEach(product => { %>
+                    <div class="cart">
+                        <div class="basket-product">
+                            <div class="item">
+                            <div class="product-image">
+                                <img src="<%= product.product.img %>" alt="<%= product.product.img %>" class="product-frame">
+                            </div>
+                            <div class="product-details">
+                                <h1><strong><span class="item-quantity"><%= product.quantity %></span> x <%= product.product.name %></strong></h1>
+                                <p>Product-code: <%= product.product.id %></p>
+                            </div>
+                            </div>
+                        </div>
+                    <div>
+                <% }); %>
+            <% } else { %>
+                <p>Empty</p>
+            <% } %>
+        </div>
+        <div class="columnTen">
+        </div>
+    <script>
+    </script>
+    </body>
+</html>

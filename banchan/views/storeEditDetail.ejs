@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+            <div class="leftSideNav">
+                <a href="/store/<%= store.url_key %>">가게홈</a>
+                <a href="/store/<%= store.url_key %>/setting/productList">제품확인</a>
+                <a href="/store/<%= store.url_key %>/setting/editStoreDetail">가게 설정 변경</a>
+            </div>
+        </div>
+            <table>
+                <colgroup>
+                    <col style="width:20%"><col>
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <th>가게 이름 변경</th>
+                        <td>
+                            <input type="TEXT" id="name" name="newName" value="<%= store.name %>">
+                            <button type="button" onclick="changeName()" >변경하기</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>우편번호</th>
+                        <td>
+                            <input type="hidden" id="confmKey" name="confmKey" value=""  >
+                            <!-- 실제 사용시 로 바꿔주세요<input type="text" id="zipNo" name="zipNo" readonly style="width:100px"> -->
+                            <input type="text" id="zipNo" name="zipNo" style="width:100px">
+                            <input type="button"  value="주소검색" onclick="goPopup();">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>전체도로명주소</th>
+                        <td><input type="text" id="roadFullAddr" name="roadFullAddr" style="width:85%" value="<%= store.address.roadFullAddr %>"></td>
+                    </tr>
+                    <tr>
+                        <th>도로명주소</th>
+                        <td><input type="text" id="roadAddrPart1" name="roadAddrPart1" style="width:85%" value="<%= store.address.roadAddrPart1 %>"></td>
+                    </tr>
+                    <tr>
+                        <th>영문도로명주소</th>
+                        <td><input type="text" id="engAddr" name="engAddr" style="width:85%" value="<%= store.address.engAddr %>"></td>
+                    </tr>
+                    <tr>
+                        <th>상세주소</th>
+                        <td>
+                            <input type="text" id="addrDetail" name="addrDetail" style="width:40%" value="<%= store.address.addrDetail %>">
+                            <input type="text" id="roadAddrPart2" name="roadAddrPart2"  style="width:40%" value="<%= store.address.roadAddrPart2 %>">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>시도명</th>
+                        <td><input type="text" id="siNm" name="siNm" style="width:85%" value="<%= store.address.siNm %>"></td>
+                    </tr>
+                    <tr>
+                        <th>시군구명</th>
+                        <td><input type="text" id="sggNm" name="sggNm" style="width:85%" value="<%= store.address.sggNm %>"></td>
+                    </tr>
+                    <tr>
+                        <th>읍면동명</th>
+                        <td><input type="text" id="emdNm" name="emdNm" style="width:85%" value="<%= store.address.emdNm %>"></td>
+                    </tr>
+                    <tr>
+                        <th>도로명</th>
+                        <td><input type="text" id="rn" name="rn" style="width:85%" value="<%= store.address.rn %>"></td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td><button type="button" onclick="changeAddress()">주소 변경</button></td>
+                    </tr>
+                </tbody>
+		    </table>
+        </div>
+        <div class="columnTen">
+        </div>
+        <script>
+            function changeName() {
+                var input = document.getElementById("name").value;
+                <% if(user && user.id) { %>
+                if(confirm('Are you sure you want to change store name?')) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.onload = function() {
+                        if(xhr.status === 200) {
+                            var result = JSON.parse(xhr.responseText).result;
+                            alert(result);
+                            location.reload();
+                        } else {
+                            console.error(xhr.responseText);
+                        }
+                    };
+                    xhr.open('POST','/store/<%= store.url_key %>/setting/changeStoreName');
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.send(JSON.stringify({ newName: input }));
+                } else {
+                     alert('You should click Yes to process next step');
+                }
+                <% } else { %>
+                    alert('You should login');
+                <% } %>
+            }
+
+            function goPopup(){
+                var pop = window.open("/popup/jusoPopup.jsp","pop","width=570,height=420, scrollbars=yes, resizable=yes")
+            }
+            function jusoCallBack(roadFullAddr,roadAddrPart1,addrDetail,roadAddrPart2,engAddr, jibunAddr, zipNo, admCd, rnMgtSn, bdMgtSn
+                                    , detBdNmList, bdNm, bdKdcd, siNm, sggNm, emdNm, liNm, rn, udrtYn, buldMnnm, buldSlno, mtYn, lnbrMnnm, lnbrSlno, emdNo) {
+                document.form.roadFullAddr.value = roadFullAddr;
+                document.form.roadAddrPart1.value = roadAddrPart1;
+                document.form.engAddr.value = engAddr;
+                document.form.siNm.value = siNm;
+                document.form.sggNm.value = sggNm;
+                document.form.emdNm.value = emdNm;
+                document.form.rn.value = rn;
+                document.form.roadAddrPart2.value = roadAddrPart2;
+                document.form.addrDetail.value = addrDetail;
+                document.form.zipNo.value = zipNo;
+            }
+
+            function changeAddress() {
+                var roadFullAddr = document.getElementById("roadFullAddr").value;
+                var roadAddrPart1 = document.getElementById("roadAddrPart1").value;
+                var engAddr = document.getElementById("engAddr").value;
+                var siNm = document.getElementById("siNm").value;
+                var sggNm = document.getElementById("sggNm").value;
+                var emdNm = document.getElementById("emdNm").value;
+                var rn = document.getElementById("rn").value;
+                var roadAddrPart2 = document.getElementById("roadAddrPart2").value;
+                var addrDetail = document.getElementById("addrDetail").value;
+                var zipNo = document.getElementById("zipNo").value;
+                console.log(roadFullAddr);
+
+                <% if(user && user.id) { %>
+                if(confirm('Are you sure you want to change store name?')) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.onload = function() {
+                        if(xhr.status === 200) {
+                            var result = JSON.parse(xhr.responseText).result;
+                            alert(result);
+                            location.reload();
+                        } else {
+                            console.error(xhr.responseText);
+                        }
+                    };
+                    xhr.open('POST','/store/<%= store.url_key %>/setting/changeStoreAddress');
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.send(JSON.stringify({
+                        roadFullAddr: roadFullAddr,
+                        roadAddrPart1: roadAddrPart1,
+                        engAddr: engAddr,
+                        siNm: siNm,
+                        sggNm: sggNm,
+                        emdNm: emdNm,
+                        rn: rn,
+                        roadAddrPart2: roadAddrPart2,
+                        addrDetail: addrDetail,
+                        zipNo: zipNo,
+                    }));
+                } else {
+                     alert('You should click Yes to process next step');
+                }
+                <% } else { %>
+                    alert('You should login');
+                <% } %>
+            }
+        </script>
+    </body>
+</html>

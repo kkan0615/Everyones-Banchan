@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+        </div>
+        <div class="columnSeventyFive">
+            <form method="POST">
+                주소 저장하기 <input type="checkbox" name="saveAddress">
+                <button type="button" onclick="useSavedAddress()">저장된 주소 사용</button>
+                <table>
+                    <colgroup>
+                        <col style="width:20%"><col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th>이름</th>
+                            <td><input type="text" name="name" value="name"></td>
+                        </tr>
+                        <tr>
+                            <th>우편번호</th>
+                            <td>
+                                <input type="hidden" id="confmKey" name="confmKey" value=""  >
+                                <!-- 실제 사용시 로 바꿔주세요<input type="text" id="zipNo" name="zipNo" readonly style="width:100px"> -->
+                                <input type="text" id="zipNo" name="zipNo" style="width:100px">
+                                <input type="button"  value="주소검색" onclick="goPopup();">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>전체도로명주소</th>
+                            <td><input type="text" id="roadFullAddr" name="roadFullAddr" style="width:85%"></td>
+                        </tr>
+                        <tr>
+                            <th>도로명주소</th>
+                            <td><input type="text" id="roadAddrPart1" name="roadAddrPart1" style="width:85%"></td>
+                        </tr>
+                        <tr>
+                            <th>영문도로명주소</th>
+                            <td><input type="text" id="engAddr" name="engAddr" style="width:85%"></td>
+                        </tr>
+                        <tr>
+                            <th>상세주소</th>
+                            <td>
+                                <input type="text" id="addrDetail" name="addrDetail" style="width:40%" value="">
+                                <input type="text" id="roadAddrPart2" name="roadAddrPart2"  style="width:40%" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>시도명</th>
+                            <td><input type="text" id="siNm" name="siNm" style="width:85%"></td>
+                        </tr>
+                        <tr>
+                            <th>시군구명</th>
+                            <td><input type="text" id="sggNm" name="sggNm" style="width:85%"></td>
+                        </tr>
+                        <tr>
+                            <th>읍면동명</th>
+                            <td><input type="text" id="emdNm" name="emdNm" style="width:85%"></td>
+                        </tr>
+                        <tr>
+                            <th>도로명</th>
+                            <td><input type="text" id="rn" name="rn" style="width:85%"></td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td>
+                                <button type="submit">주문하기</button>
+                                <button type="reset">reset</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        <div class="columnTen">
+        </div>
+    <script>
+        function useSavedAddress() {
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+                if(xhr.status === 200) {
+                    var result = JSON.parse(xhr.responseText);
+                    document.form.roadFullAddr.value = result.roadFullAddr;
+                    document.form.roadAddrPart1.value = result.roadAddrPart1;
+                    document.form.engAddr.value = result.engAddr;
+                    document.form.siNm.value = result.siNm;
+                    document.form.sggNm.value = result.sggNm;
+                    document.form.emdNm.value = result.emdNm;
+                    document.form.rn.value = result.rn;
+                    document.form.roadAddrPart2.value = result.roadAddrPart2;
+                    document.form.addrDetail.value = result.addrDetail;
+                    document.form.zipNo.value = result.zipNo
+                } else {
+                    console.error(xhr.responseText);
+                }
+            };
+            xhr.open('POST','order/getAddress');
+            //xhr.setRequestHeader('Content-Type', 'application/json');
+            //xhr.send(JSON.stringify({ url_key: url_key }));
+            xhr.send();
+        }
+        function goPopup(){
+            var pop = window.open("/popup/jusoPopup.jsp","pop","width=570,height=420, scrollbars=yes, resizable=yes");
+        }
+        function jusoCallBack(roadFullAddr,roadAddrPart1,addrDetail,roadAddrPart2,engAddr, jibunAddr, zipNo, admCd, rnMgtSn, bdMgtSn
+                                , detBdNmList, bdNm, bdKdcd, siNm, sggNm, emdNm, liNm, rn, udrtYn, buldMnnm, buldSlno, mtYn, lnbrMnnm, lnbrSlno, emdNo){
+            document.form.roadFullAddr.value = roadFullAddr;
+            document.form.roadAddrPart1.value = roadAddrPart1;
+            document.form.engAddr.value = engAddr;
+            document.form.siNm.value = siNm;
+            document.form.sggNm.value = sggNm;
+            document.form.emdNm.value = emdNm;
+            document.form.rn.value = rn;
+            document.form.roadAddrPart2.value = roadAddrPart2;
+            document.form.addrDetail.value = addrDetail;
+            document.form.zipNo.value = zipNo;
+        }
+    </script>
+    </body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+        </div>
+        <div class="columnSeventyFive">
+            <p>주문이 완료 되었습니다!!!</p>
+            <% orders.forEach(order => { %>
+                <% if(order.code) { %>
+                    <p>주문번호 확인: <%= order.code %></p>
+                <% } else { %>
+
+                <% } %>
+            <% }); %>
+        </div>
+        <div class="columnTen">
+
+        </div>
+    <script>
+    </script>
+    </body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+    <div class="mainbody">
+        <% if(saleList) { %>
+            <table class="table_list">
+                <thead>
+                    <tr>
+                        <th scope="cols">img</th>
+                        <th scope="cols">title</th>
+                        <th scope="cols">price</th>
+                         <th scope="cols">time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% saleList.forEach(product => { %>
+                        <tr>
+                            <td><img src="<%= product.img %>" alt="<%= product.img %>"></td>
+                            <th scope="row"><a href="/store/<%= product.store.url_key %>/product/<%= product.id %>"><%= product.name %></a></td>
+                            <th scope="row"><%= product.orginalPrice %></a></td>
+                            <td id="time" data-start="<%= product.startSale %>" data-end="<%= product.endSale %>" ></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <p>Sale 품목이 없습니다!</p>
+        <% } %>
+        <%= %>
+    </div>
+    <script>
+        var es = new EventSource("/sse");
+        es.onmessage = function (e) {
+            document.querySelectorAll('#time').forEach(function(td) {
+                var end = new Date(td.dataset.start);
+                var serverTime = new Date(parseInt(e.data, 10));
+                end.setMinutes(end.getMinutes() + parseInt(td.dataset.end, 10));
+                if (serverTime >= end) {
+                    return td.textContent = '00:00:00';
+                } else {
+                    var t = end - serverTime;
+                    var seconds = ('0' + Math.floor((t / 1000) % 60)).slice(-2);
+                    var minutes = ('0' + Math.floor((t / 1000 / 60) % 60)).slice(-2);
+                    var hours = ('0' + Math.floor((t / (1000 * 60 * 60)) % 24)).slice(-2);
+                    return td.textContent = hours + ':' + minutes + ':' + seconds
+                }
+            });
+        };
+    </script>
+    </body>
+</html>

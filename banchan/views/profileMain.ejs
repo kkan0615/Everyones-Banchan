@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% console.log(userInfo);
+     %>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+            <a href="/profile/edit">수정하기</a>
+        </div>
+        <div class="columnSeventyFive">
+            <p><%= userInfo.nickname %> 님의 프로필입니다.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="cols">img</th>
+                        <th scope="cols">가게이름</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% userInfo.stores.forEach(store => { %>
+                        <tr>
+                            <td><img src="<%= store.img %>" alt="<%= store.img %>"></td>
+                            <th scope="row"><a href="/store/<%= store.url_key %>"><%= store.name %></a></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            <% if(userInfo.isSaler) { %>
+                <p>판매자입니다.</p>
+            <% } else { %>
+                <p>고객인 유저입니다.</p>
+            <% } %>
+            <%= %>
+        </div>
+        <div class="columnTen">
+        </div>
+    <script>
+    </script>
+    </body>
+</html>

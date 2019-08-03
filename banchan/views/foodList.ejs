@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+            <fieldset>
+
+            </fieldset>
+            <a href="/food/makeFood">Food</a>
+        </div>
+        <div class="columnSeventyFive">
+            <table class="table_list">
+                <thead>
+                    <tr>
+                        <th scope="cols">title</th>
+                        <th scope="cols">author</th>
+                        <th scope="cols">timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% foodList.forEach(food => { %>
+                        <tr>
+                            <th scope="row"><a href="/food/<%= food.url_key %>"><%= food.name %></a></td>
+                            <td><%= food.createdAt %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+        <div class="columnTen">
+            <p>hi two</p>
+        </div>
+    </body>
+</html>

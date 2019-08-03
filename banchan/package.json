@@ -1,0 +1,46 @@
+{
+  "name": "everyonesbanchan",
+  "version": "0.0.1",
+  "description": "Shopping mall for banchan 반찬가게 입니다,",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kkan0615/NodeJs-GameSite.git"
+  },
+  "author": "Youngjin Kwak",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kkan0615/NodeJs-GameSite/issues"
+  },
+  "homepage": "https://github.com/kkan0615/NodeJs-GameSite#readme",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "bcryptjs": "^2.4.3",
+    "connect": "^3.7.0",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.4",
+    "dotenv": "^8.0.0",
+    "ejs": "^2.6.2",
+    "express": "^4.17.1",
+    "express-session": "^1.16.2",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.1",
+    "mysql2": "^1.6.5",
+    "node-schedule": "^1.3.2",
+    "nodemailer": "^6.3.0",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "sequelize": "^5.9.4",
+    "socket.io": "^2.2.0",
+    "sse": "0.0.8",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
+}

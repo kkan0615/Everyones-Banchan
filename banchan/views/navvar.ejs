@@ -1,0 +1,39 @@
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="">최신글</a>
+        <a href="">커뮤니티</a>
+        <a href="">customer</a>
+        <a href="">Admin</a>
+        <div class="dropdown">
+            <button class="dropbtn">Dropdown
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="#">Link 1</a>
+                <a href="#">Link 2</a>
+                <a href="#">Link 3</a>
+            </div>
+        </div>
+        <% if(user && user.id) { %>
+        <div class="dropdown" style="float:right">
+            <button class="dropbtn" ><%= user.nickname %>
+            <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+            <a href="/auth/logout">Logout</a>
+            <a href="/profile/<%= user.id %>">내정보</a>
+            </div>
+        </div>
+        <% } else { %>
+            <div class="dropdown" style="float:right">
+            <button class="dropbtn">Human
+            <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+            <a href="/join">회원가입</a>
+            <a href="/login">Login</a>
+            </div>
+        </div>
+        <% } %>
+        <%= %>
+    </div>

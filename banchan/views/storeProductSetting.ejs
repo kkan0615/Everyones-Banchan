@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+            <fieldset>
+                <a href="/store/<%= store.url_key %>">가게홈</a>
+                <a href="">제품확인</a>
+            </fieldset>
+        </div>
+        <div class="columnSeventyFive">
+            <p>제품수 : <%= proudctList.count %></p>
+            <table class="table_list">
+                <thead>
+                    <tr>
+                        <th scope="cols"><input type="checkbox" name="select-all" id="select-all" />전부선택</th>
+                        <th scope="cols">img</th>
+                        <th scope="cols">title</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% proudctList.rows.forEach(product => { %>
+                        <tr>
+                            <td><input type="checkbox" name="product" value="<%= product.id %>"></td>
+                            <td><img src="<%= product.img %>" alt="<%= product.img %>"></td>
+                            <th scope="row"><a href="/store/<%= store.url_key %>/product/<%= product.id %>"><%= product.name %></a></td>
+                            <td><button type="button" onclick="saleProduct(<%= product.id %>)">세일!</button></td>
+                            <td><a href="/store/<%= store.url_key %>/editProduct?product=<%= product.id %>">수정하기</a></td>
+                            <td><button type="button" onclick="deleteProduct(<%= product.id %>)">삭제하기</button></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+        <div class="columnTen">
+        </div>
+        <script>
+            $('#select-all').click(function(event) {
+                if(this.checked) {
+                    // Iterate each checkbox
+                    $(':checkbox').each(function() {
+                        this.checked = true;
+                    });
+                } else {
+                    $(':checkbox').each(function() {
+                        this.checked = false;
+                    });
+                }
+            });
+            function deleteProduct(productId) {
+                <% if(user && user.id) { %>
+                    <% if(user.id != store.managerId ) { %>
+                         alert('You are not permiited to delete it');
+                    <% } else { %>
+                        if(confirm('Would you like to delete this product in your store?')) {
+                            var xhr = new XMLHttpRequest();
+                            xhr.onload = function() {
+                                if(xhr.status === 200) {
+                                    var result = JSON.parse(xhr.responseText).result;
+                                    alert(result);
+                                    location.reload();
+                                } else {
+                                    console.error(xhr.responseText);
+                                }
+                            };
+                            xhr.open('delete','/store/<%= store.url_key %>/setting/productList');
+                            xhr.setRequestHeader('Content-Type', 'application/json');
+                            xhr.send(JSON.stringify({ productId: productId }));
+                            //xhr.send();
+
+                        } else {
+                            alert('You should click Yes to process next step');
+                        }
+                    <% } %>
+                <% } else { %>
+                    alert('You should login');
+                <% } %>
+            }
+
+            function saleProduct(productId) {
+                <% if(user && user.id) { %>
+                    <% if(user.id != store.managerId ) { %>
+                         alert('You are not permiited to delete it');
+                    <% } else { %>
+                        var salePrice = prompt('Sale price를 설정해주세요', 1000);
+                        var saleTime = prompt('Sale 시간을 넣어주세요(시간단위)', 1);
+                        var xhr = new XMLHttpRequest();
+                        xhr.onload = function() {
+                            if(xhr.status === 200) {
+                                var result = JSON.parse(xhr.responseText).result;
+                                alert(result);
+                                location.reload();
+                            } else {
+                                console.error(xhr.responseText);
+                            }
+                        };
+                        xhr.open('POST','/store/<%= store.url_key %>/setting/productSale');
+                        xhr.setRequestHeader('Content-Type', 'application/json');
+                        xhr.send(JSON.stringify({ productId: productId, salePrice: salePrice, saleTime: saleTime }));
+                        //xhr.send();
+                    <% } %>
+                <% } else { %>
+                    alert('You should login');
+                <% } %>
+            }
+        </script>
+    </body>
+</html>

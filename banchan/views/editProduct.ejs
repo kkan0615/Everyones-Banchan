@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+    <div class="content">
+        <form method="POST" action="/store/<%= store.url_key %>/editProduct?product=<%= product.id %>" enctype="multipart/form-data">
+            name <input type="text" name="name" value="name" placeholder="<% product.name %>"><br>
+            price <input type="number" name="price" value="price" placeholder="<%= product.orginalPrice %>"><br>
+            introduction <input type="textarea" name="introduction" value="introduction" placeholder="<%= product.introduction %>"><br>
+            content <input type="textarea" name="content" value="content" placeholder="<%= product.content %>"><br>
+            <select name="food">
+                <option value="<%= product.foodId %>"><%= product.food.name %></option>
+                <% foodList.forEach(food => { %>
+                    <option value="<%= food.id %>"><%= food.name %></option>
+                <% }); %>
+            </select>
+            images <input type="file" id="img" name="img" multiple><br>
+            <button type="submit">submit</button>
+            <button type="reset">reset</button>
+        </form>
+    </div>
+    </body>
+</html>

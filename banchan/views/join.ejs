@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    <head>
+    <body>
+        <% include ./topNav %>
+        <% if ( joinError.length > 0 ) { %>
+            <p>Message: <%= joinError %> </p>
+        <% } %>
+        <%= %>
+        <form method="POST" action="/auth/join">
+            Email <input type="email" name="email"><br>
+            Nickname: <input type="text" name="nick"><br>
+            Password <input type="password" name="password"><br>
+            <button type="submit">submit</button>
+        </form>
+
+    </body>
+</html>

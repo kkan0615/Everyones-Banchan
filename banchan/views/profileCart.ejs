@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+        </div>
+        <div class="columnSeventyFive">
+            <div class="basket">
+            <div class="basket-module">
+                <label for="promo-code">Enter a promotional code</label>
+                <input id="promo-code" type="text" name="promo-code" maxlength="5" class="promo-code-field">
+                <button class="promo-code-cta">Apply</button>
+            </div>
+            <div class="basket-labels">
+                <ul>
+                <li class="item item-heading">상품</li>
+                <li class="price">가격</li>
+                <li class="quantity">수량</li>
+                <li class="subtotal">상품 총 가격</li>
+                </ul>
+            </div>
+            <% if(cart.productList) { %>
+                <% cart.productList.forEach(product => { %>
+                    <div class="cart">
+                    <div class="basket-product">
+                        <div class="item">
+                        <div class="product-image">
+                            <img src="<%= product.product.img %>" alt="<%= product.product.img %>" class="product-frame">
+                        </div>
+                        <div class="product-details">
+                            <h1><strong><span class="item-quantity"><%= product.quantity %></span> x <%= product.product.name %></strong></h1>
+                            <p>Product-code: <%= product.product.id %></p>
+                        </div>
+                        </div>
+                        <div class="price">26.00</div>
+                        <div class="quantity">
+                            <input type="number" name="quantity" value="<%= product.quantity %>" min="1" class="quantity-field" onchange="changeQuantity(<%= product.product.id %>, this.value)">
+                        </div>
+                        <div class="subtotal"><%= product.price %></div>
+                        <div class="remove">
+                        <button onclick="deleteProduct(<%= product.product.id %>)">Remove</button>
+                        </div>
+                    </div>
+                    <div>
+                <% }); %>
+            <% } else { %>
+                <p>Empty</p>
+            <% } %>
+            <%= %>
+            <aside>
+            <div class="summary">
+                <div class="summary-total-items"><span class="total-items"></span> Items in your Bag</div>
+                <div class="summary-subtotal">
+                <div class="subtotal-title">Subtotal</div>
+                <div class="subtotal-value final-value" id="basket-subtotal"><%= cart.totalPrice %></div>
+                <div class="summary-promo hide">
+                    <div class="promo-title">Promotion</div>
+                    <div class="promo-value final-value" id="basket-promo"></div>
+                </div>
+                </div>
+                <div class="summary-delivery">
+                <select name="delivery-collection" class="summary-delivery-selection">
+                    <option value="0" selected="selected">배송방법을 선택해주세요</option>
+                    <option value="cashOnDelivery">착불 (+2500)</option>
+                    <option value="basic">일반 배송 (+2500)</option>
+                    <option value="quick">초고속 배송 (+5000)</option>
+                </select>
+                </div>
+                <div class="summary-total">
+                <div class="total-title">Total</div>
+                <div class="total-value final-value" id="basket-total"><%= cart.totalPrice %></div>
+                </div>
+                <div class="summary-checkout">
+                    <button class="checkout-cta" onclick="goToOrder()">주문하러가기</button>
+                </div>
+            </div>
+            </aside>
+        </div>
+        <div class="columnTen">
+        </div>
+    <script>
+        function changeQuantity(productId, quantity) {
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+                if(xhr.status === 200) {
+                    var result = JSON.parse(xhr.responseText).result;
+                    alert(result);
+                    location.reload();
+                } else {
+                    console.error(xhr.responseText);
+                }
+            };
+            <% if (user && user.id) { %>
+                xhr.open('PUT','/cart?id=<%= user.id %>');
+            <% } else { %>
+                xhr.open('PUT','/cart');
+            <% } %>
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({ productId: productId, quantity: quantity }));
+            //xhr.send();
+        }
+
+        function deleteProduct(productId) {
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+                if(xhr.status === 200) {
+                    var result = JSON.parse(xhr.responseText).result;
+                    alert(result);
+                    location.reload();
+                } else {
+                    console.error(xhr.responseText);
+                }
+            };
+            <% if (user && user.id) { %>
+                xhr.open('delete','/cart?id=<%= user.id %>');
+            <% } else { %>
+                xhr.open('delete','/cart');
+            <% } %>
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({ productId: productId}));
+            //xhr.send();
+        }
+
+        function goToOrder() {
+            location.href="/order/";
+        }
+    </script>
+    </body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+    <div class="content">
+        <% if ( error.length > 0 ) { %>
+            <p>Message: <%= error %> </p>
+        <% } %>
+        <%= %>
+        <form method="POST" action="/store/<%= store.url_key %>/addProduct" enctype="multipart/form-data">
+            name <input type="text" name="name" value="name"><br>
+            price <input type="number" name="price" value="price"><br>
+            introduction <input type="textarea" name="introduction" value="introduction"><br>
+            content <input type="textarea" name="content" value="content"><br>
+            <select name="food">
+                <% foodList.forEach(food => { %>
+                    <option value="<%= food.id %>"><%= food.name %></option>
+                <% }); %>
+            </select>
+            images <input type="file" id="img" name="img" multiple><br>
+            <button type="submit">submit</button>
+            <button type="reset">reset</button>
+        </form>
+    </div>
+    </body>
+</html>

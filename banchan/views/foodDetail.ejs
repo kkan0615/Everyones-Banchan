@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ./layout %>
+    </head>
+    <body>
+    <% include ./topNav %>
+        <div class="columnFifteen">
+            <fieldset>
+            </fieldset>
+            <a href="/food/<%= food.url_key %>/storeList">스토어찾기</a><br>
+        </div>
+        <div class="columnSeventyFive">
+            <img src="/uploads/<%= food.img %>" alt="<%= food.img %>">
+            <h1><%= food.name %></h1>
+            <p><%= food.introduction %></p>
+        </div>
+        <div class="columnTen">
+            <p>hi two</p>
+        </div>
+        <script>
+        </script>
+    </body>
+</html>
