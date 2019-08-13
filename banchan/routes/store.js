@@ -417,16 +417,6 @@ router.post('/:url_key/addProduct', isLoggedIn, isValidate, isSaler, upload.arra
             res.redirect('/');
         }
 
-        /*
-            Sample of body
-            [Object: null prototype] {
-                name: '콩나물무침',
-                price: '2000',
-                introduction: '콩나물 무침 매운거 아니에용~',
-                content: '2+1',
-                food: '3'
-            }
-         */
         if(!req.body.name || !req.body.price || !req.body.introduction || !req.body.content || !req.body.food) {
             req.flash('addProductError', '모든 포멧을 완성시켜주세요');
             res.redirect('/store/'+store.url_key+'/addProduct');
@@ -561,6 +551,204 @@ router.get('/:url_key/product/:id', async(req, res, next) => {
             store: store,
             product: product,
         });
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+});
+
+router.get('/:url_key/product/:id/comment', async(req, res, next) => {
+    try {
+        const store = await Store.findOne({
+            include:[{
+                model: User,
+                as: 'manager',
+            }, {
+                model: Product,
+                include: [{
+                    model: ProductComment,
+                },{
+                    model: Food,
+                }],
+                where: { id: req.params.id },
+            }, {
+                model: StoreComment,
+            }],
+            where: { url_key: req.params.url_key },
+        });
+
+        if(!store) {
+            req.flash('error', 'Stroe is not found');
+            res.redirect('/');
+        }
+
+        const product = await Product.findOne({
+            include: [{
+                model: ProductImage,
+            }],
+            where: { id: req.params.id }
+        });
+
+        const comments = await ProductComment.findAndCountAll({
+            include:[{
+                model: User,
+                as: 'author',
+            }, {
+                model: CommentImage
+            }],
+            where: { productId: product.id }
+        })
+
+        return res.render('product/comment', {
+            title: product.name,
+            user: req.user,
+            store: store,
+            product: product,
+            comments:comments,
+        });
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+});
+
+fs.readdir('uploads/productComments', (error) => {
+    if(error) {
+        console.error('Uploads directory is not existed');
+        fs.mkdirSync('uploads/productComments');
+    }
+});
+
+const upload2 = multer({
+    storage: multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, 'uploads/productComments');
+        },
+        filename: function (req, file, cb) {
+            cb(null, new Date().valueOf() + path.extname(file.originalname));
+        }
+    }),
+});
+
+/* 제품 댓글 생성 - POST */
+router.post('/:url_key/product/:id/comment', isLoggedIn, upload2.array('img'), async(req, res, next) => {
+    try {
+        const store = await Store.findOne({
+            include:[{
+                model: User,
+                as: 'manager',
+            }],
+            where: { url_key: req.params.url_key },
+        });
+
+        if(!store) {
+            req.flash('error', 'Stroe is not found');
+            res.redirect('/');
+        }
+
+        const product = await Product.findOne({
+            where: { id: req.params.id }
+        });
+
+        const { content, stars } = req.body;
+
+        const productComment = await ProductComment.create({
+            content: content,
+            stars: stars,
+            authorId: req.user.id,
+            productId: product.id,
+        });
+
+        if(req.files[0]) {
+            if(req.files.length > 1 ) {
+                req.files.forEach(async (file) => {
+                    await CommentImage.create({
+                        img: file.filename,
+                        productCommentId: productComment.id,
+                    });
+                });
+            } else {
+                CommentImage.create({
+                    img: req.files[0].filename,
+                    productCommentId: productComment.id,
+                });
+            }
+        }
+
+        return res.redirect('/store/'+store.url_key+'/product/'+product.id+'/comment');
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+});
+
+/* 제품 댓글 삭제 - DELETE */
+router.delete('/:url_key/product/:id/comment', isLoggedIn, async(req, res, next) => {
+    try {
+        const store = await Store.findOne({
+            include:[{
+                model: User,
+                as: 'manager',
+            }],
+            where: { url_key: req.params.url_key },
+        });
+
+        if(!store) {
+            return res.json({ message: '가게 정보가 존재하지 않습니다.' });
+        }
+
+        const product = await Product.findOne({
+            where: { id: req.params.id }
+        });
+
+        const { commentId } = req.body;
+
+        await ProductComment.destroy({
+            where: { id: commentId, productId: product.id }
+        });
+
+        const commentImages = await CommentImage.findAll({
+            where: { productCommentId: commentId }
+        });
+
+        if(commentImages) {
+            for (let i = 0; i < commentImages.length; i++) {
+                /* Delete a file in directory */
+                fs.unlink('uploads/productComments/' + commentImages[i].img, function (error) {
+                    if(error) {
+                        console.error('File is not found');
+                    } else {
+                        console.log('성공적으로 파일을 삭제하였습니다.');
+                    }
+                  });
+            }
+            await CommentImage.destroy({
+                where: { id: commentId }
+            });
+        }
+
+        return res.json({ message: '성공적으로 삭제했습니다.' });
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+});
+
+router.put('/:url_key/product/:id/comment', isLoggedIn, upload2.array('img'), async(req, res, next) => {
+    try {
+        const store = await Store.findOne({
+            include:[{
+                model: User,
+                as: 'manager',
+            }],
+            where: { url_key: req.params.url_key },
+        });
+
+        if(!store) {
+            return res.json({ message: '가게 정보가 존재하지 않습니다.' });
+        }
+
+        return res.json({ message: '성공적으로 수정하였습니다.' });
     } catch (error) {
         console.error(error);
         next(error);

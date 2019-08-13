@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const path = require('path');
 const session = require('express-session'); // npm i express-session [ https://www.npmjs.com/package/express-session ]
 const flash = require('connect-flash');
-const passport = require('passport'); // npm i passport
+const passport = require('passport'); // npm i passport, npm i passport-local(for local)
 require('dotenv').config();
 const { sequelize } = require('./models');
 const passportConfig = require('./passport');
@@ -20,6 +20,9 @@ const webSocket = require('./socket/socket');
 const checkSale = require('./routes/checkSale');
 const orderRouter = require('./routes/order');
 const searchRouter = require('./routes/search');
+const logger = require('./logger');
+const helmet = require('helmet');
+const hpp = require('hpp');
 
 const app = express();
 sequelize.sync();
@@ -32,7 +35,7 @@ const sessionMiddleware = session({
       httpOnly: true,
       secure: false,
     },
-  });
+});
 
 passportConfig(passport);
 checkSale(); // 세일 품목 전부 확인
@@ -40,7 +43,15 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.set('port', process.env.PORT || 8001);
 
-app.use(morgan('dev'));
+/* "start": "cross-env NODE_ENV=production PORT=80 pm2 start app.js -i 0", */
+if(process.env.NODE_ENV === 'production') {
+    app.use(morgan('combined'));
+    app.use(helmet());
+    app.use(hpp());
+    sessionMiddleware.proxy = true;
+} else {
+    app.use(morgan('dev'));
+}
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -66,3 +77,4 @@ const server = app.listen(app.get('port'), () => {
 
 sse(server);
 webSocket(server, app, sessionMiddleware);
+

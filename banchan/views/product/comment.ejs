@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ../layout %>
+    </head>
+    <body>
+        <% console.log(comments); %>
+        <% include ../topNav %>
+        <div class="columnFifteen">
+        </div>
+        <div class="columnSeventyFive">
+            <h1><%= product.name %></h1>
+            <div class="cont">
+                <div class="stars">
+                    <form method="POST" enctype="multipart/form-data">
+                        <h1>평점쓰기</h1>
+                        <input class="star star-5" id="star-5" type="radio" name="stars" value="5"/>
+                        <label class="star star-5" for="star-5"></label>
+                        <input class="star star-4" id="star-4" type="radio" name="stars" value="4"/>
+                        <label class="star star-4" for="star-4"></label>
+                        <input class="star star-3" id="star-3" type="radio" name="stars" value="3"/>
+                        <label class="star star-3" for="star-3"></label>
+                        <input class="star star-2" id="star-2" type="radio" name="stars" value="2"/>
+                        <label class="star star-2" for="star-2"></label>
+                        <input class="star star-1" id="star-1" type="radio" name="stars" value="1"/>
+                        <label class="star star-1" for="star-1"></label>
+                        <div class="rev-box">
+                            <textarea class="review" name="content"></textarea>
+                            <label class="review" for="review"><button type="submit">댓글쓰기</button></label>
+                            <input type="file" id="img" name="img">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="comment">
+                <% if(comments) { %>
+                    <a href="">최신순</a>
+                    <a href="">추천수</a>
+                    <ul>
+                        <% comments.rows.forEach(comment => { %>
+                        <hr>
+                        <li>
+                            <h1><%= comment.author.nickname %></h1>
+                            <button onclick="deleteComment(<%= comment.id %>)">삭제하기</button>
+                            <button onclick="showEdit(<%= comment.id %>)">수정하기</button>
+                            <p><%= comment.content %></p>
+                            <div class="editComment" id="<%= comment.id %>">
+                                <textarea class=""  name="content"><%= comment.content %></textarea>
+                                <button onclick="">수정하기</button>
+                            </div>
+                        </li>
+
+                        <% }); %>
+                    </ul>
+                <% } %>
+            <%= %>
+            </div>
+        </div>
+        <div class="columnTen">
+        </div>
+        <script>
+            function deleteComment(commentId) {
+                var xhr = new XMLHttpRequest();
+                xhr.onload = function() {
+                    if(xhr.status === 200) {
+                        var result = JSON.parse(xhr.responseText).message;
+                        alert(result);
+                        location.reload();
+                    } else {
+                        console.error(xhr.responseText);
+                    }
+                };
+                xhr.open('delete', '/store/<%= store.url_key %>/product/<%= product.id %>/comment')
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify({ commentId: commentId }));
+                //xhr.send();
+            }
+
+            function showEdit(id) {
+                var div = document.getElementById(id);
+                if(div.style.display === 'none'){
+                    document.getElementById(id).style.display ='block';
+                } else {
+                    document.getElementById(id).style.display ='none';
+                }
+            }
+        </script>
+        <style>
+            .product-comment input[type=text] {
+                width: 80%;
+                height: 100px;
+                border: solid 2px grey;
+                border-radius: 12px;
+            }
+
+            .product-comment button[type=submit] {
+                height: 100px;
+                background-color: #FF9E91;
+                font-size: 15px;
+                border: solid 2px grey;
+                border-radius: 12px;
+            }
+    </style>
+    </body>
+</html>

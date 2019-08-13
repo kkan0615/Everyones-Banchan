@@ -29,6 +29,10 @@ router.get('/orders', isLoggedIn, async(req, res, next) => {
     }
 });
 
+router.post('/orders', isLoggedIn, async(req, res, next) => {
+
+});
+
 router.get('/validation', isLoggedIn, async(req, res, next) => {
     try {
         const decoded = jwt.verify(req.query.jwtToken, process.env.JWT_SECRET);

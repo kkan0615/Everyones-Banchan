@@ -38,7 +38,9 @@
                 <% store.products.forEach(product => { %>
                     <div class="Itemcolumn">
                         <div class="Itemcontent">
-                            <img src="/uploads/<%= product.productImages[0].img %>" alt="<%= product.img %>">
+                            <a href="/store/<%= store.url_key %>/product/<%= product.id %>/">
+                                <img src="/uploads/<%= product.productImages[0].img %>" alt="<%= product.img %>">
+                            </a>
                             <h1><%= product.name %></h1>
                             <p class="old">기본가격: <%= product.orginalPrice %></p>
                             <% if(product.salePrice) { %>

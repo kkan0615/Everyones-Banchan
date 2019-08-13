@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => (
             allowNull: true,
             defaultValue: null,
         },
+        deliveryStatus: {
+            type: DataTypes.STRING(100),
+            allowNull: true,
+            defaultValue: null,
+        },
         quantity: {
             type: DataTypes.INTEGER(),
             allowNull: false,
