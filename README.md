@@ -5,3 +5,7 @@
 ## Goal
 1. Design MySQL database.
 2. Build GCP infrastructure.
+
+## Used Modules
+1. Express
+2. cookie-parser
