@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <% include ../layout %>
+    <head>
+    <body>
+        <% include ../topNav %>
+        <div class="join">
+            <div class="box" onclick="moveToNormal()">
+                <a href="/join/userJoin">일반 유저로 가입</a>
+            </div>
+            <div class="box" onclick="moveToSaler()">
+                <a href="/join/saler">판매자로 가입</a>
+            </div>
+        </div>
+        <script>
+            function moveToNormal() {
+                location.href="/join/userJoin";
+            }
+
+            function moveToSaler() {
+                location.href="/join/saler";
+            }
+        </script>
+        <style>
+            .join {
+                width: 60%;
+                text-align: center;
+                margin: 4% auto;
+                padding: 30px 0;
+                border-radius: 5px;
+                color: white;
+                border: thin solid #FF9E91;
+            }
+
+            .box {
+                overflow: hidden;
+                padding: 30px 0;
+                margin: 4%;
+                border-radius: 50px;
+                background-color: #FF9E91;
+                border: thin black;
+            }
+
+            .box a {
+                color: black;
+                text-decoration: none;
+            }
+        </style>
+    </body>
+</html>

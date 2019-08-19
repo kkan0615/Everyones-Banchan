@@ -18,24 +18,70 @@ fs.readdir('uploads', (error) => {
     }
 });
 
-//Main page
+//Main list page
 router.get('/list', async(req, res, next) => {
     try {
 
         let stores;
         let page = req.query.page;
         let offset = 0;
+        let order = req.query.order;
 
+        /* Set page */
         if(page > 1) {
             offset = 30 * (page - 1);
         }
 
+        /* Set orders */
+        let orderFirst;
+        let orderSecond;
+        if( order === 'date_ASC' ) {
+            orderFirst = 'name';
+            orderSecond = 'ASC';
+        } else if( order === 'date_DESC' ) {
+            orderFirst = 'createdAt';
+            orderSecond = 'DESC';
+        } else if( order === 'name_ASC' ) {
+            orderFirst = 'name';
+            orderSecond = 'ASC';
+        } else if( order === 'name_DESC' ) {
+            orderFirst = 'name';
+            orderSecond = 'DESC';
+        } else {
+            orderFirst = 'name';
+            orderSecond = 'ASC';
+        }
+
         if(req.query.siNm && req.query.sggNm) {
-            const address = await Address.findAll({
-                where: { siNm: req.query.siNm },
+            stores = await Store.findAndCountAll({
+                include: [{
+                    model: User,
+                    as: 'manager',
+                }, {
+                    model: User,
+                    as: 'StoreLiker'
+                }, {
+                    model: Product,
+                    include: [{
+                        model: ProductComment,
+                    },{
+                        model: Food,
+                    }],
+                }, {
+                    model: Address,
+                    where: {
+                        siNm: req.query.siNm,
+                        sggNm: req.query.sggNm,
+                    }
+                }],
+                offset: offset,
+                limit: 30,
+                order: [
+                    ['stars', 'ASC'],
+                    [ orderFirst, orderSecond ]
+                ]
             });
-            stores = await address.getStores({ where: { siNm: req.query.siNm } });
-        } else if(req.query.siNm) {
+        } else if(req.query.siNm && req.query.siNm != 'basic') {
             stores = await Store.findAndCountAll({
                 include: [{
                     model: User,
@@ -56,6 +102,10 @@ router.get('/list', async(req, res, next) => {
                 }],
                 offset: offset,
                 limit: 30,
+                order: [
+                    ['stars', 'ASC'],
+                    [ orderFirst, orderSecond ]
+                ]
             });
         } else {
             stores = await Store.findAndCountAll({
@@ -75,7 +125,10 @@ router.get('/list', async(req, res, next) => {
                 }],
                 offset: offset,
                 limit: 30,
-                order: [['name', 'ASC']]
+                order: [
+                    ['stars', 'ASC'],
+                    [ orderFirst, orderSecond ]
+                ]
             });
         }
 
@@ -458,6 +511,7 @@ router.post('/:url_key/addProduct', isLoggedIn, isValidate, isSaler, upload.arra
     }
 });
 
+/* Product edit - POST */
 router.post('/:url_key/editProduct', isLoggedIn, isValidate, isSaler, async(req, res, next) => {
     try {
         const store = await Store.findOne({
@@ -513,6 +567,7 @@ router.post('/:url_key/editProduct', isLoggedIn, isValidate, isSaler, async(req,
     }
 });
 
+/* Product detail - GET */
 router.get('/:url_key/product/:id', async(req, res, next) => {
     try {
         const store = await Store.findOne({
@@ -557,6 +612,7 @@ router.get('/:url_key/product/:id', async(req, res, next) => {
     }
 });
 
+/* 제품 댓글 목록 Product Comment - GET */
 router.get('/:url_key/product/:id/comment', async(req, res, next) => {
     try {
         const store = await Store.findOne({
@@ -605,6 +661,7 @@ router.get('/:url_key/product/:id/comment', async(req, res, next) => {
             store: store,
             product: product,
             comments:comments,
+            error: req.flash('error'),
         });
     } catch (error) {
         console.error(error);
@@ -631,7 +688,7 @@ const upload2 = multer({
 });
 
 /* 제품 댓글 생성 - POST */
-router.post('/:url_key/product/:id/comment', isLoggedIn, upload2.array('img'), async(req, res, next) => {
+router.post('/:url_key/product/:id/comment',isLoggedIn, upload2.array('img'), async(req, res, next) => {
     try {
         const store = await Store.findOne({
             include:[{
@@ -649,6 +706,20 @@ router.post('/:url_key/product/:id/comment', isLoggedIn, upload2.array('img'), a
         const product = await Product.findOne({
             where: { id: req.params.id }
         });
+
+        if(!product) {
+            req.flash('error', 'Stroe is not found');
+            res.redirect('/');
+        }
+
+        const exCommet = await ProductComment.findOne({
+            where: { authorId: req.user.id }
+        });
+
+        if(exCommet) {
+            req.flash('error', '한번씩만 쓰기가능합니다.');
+            return res.redirect('/store/'+store.url_key+'/product/'+product.id+'/comment');
+        }
 
         const { content, stars } = req.body;
 
@@ -675,6 +746,19 @@ router.post('/:url_key/product/:id/comment', isLoggedIn, upload2.array('img'), a
             }
         }
 
+        const avg = await ProductComment.findAll({
+            attributes:[
+                [sequelize.fn('AVG', sequelize.col('stars')), 'stars_AVG']
+            ],
+            group: 'stars'
+        });
+
+        await Product.update({
+            stars: avg[0].dataValues.stars_AVG,
+        }, {
+            where: { id: req.params.id }
+        });
+
         return res.redirect('/store/'+store.url_key+'/product/'+product.id+'/comment');
     } catch (error) {
         console.error(error);
@@ -700,6 +784,12 @@ router.delete('/:url_key/product/:id/comment', isLoggedIn, async(req, res, next)
         const product = await Product.findOne({
             where: { id: req.params.id }
         });
+
+        if(!product) {
+            req.flash('error', 'Stroe is not found');
+            res.redirect('/');
+        }
+
 
         const { commentId } = req.body;
 
@@ -734,6 +824,7 @@ router.delete('/:url_key/product/:id/comment', isLoggedIn, async(req, res, next)
     }
 });
 
+/*  */
 router.put('/:url_key/product/:id/comment', isLoggedIn, upload2.array('img'), async(req, res, next) => {
     try {
         const store = await Store.findOne({
@@ -747,6 +838,22 @@ router.put('/:url_key/product/:id/comment', isLoggedIn, upload2.array('img'), as
         if(!store) {
             return res.json({ message: '가게 정보가 존재하지 않습니다.' });
         }
+
+        const product = await Product.findOne({
+            where: { id: req.params.id }
+        });
+
+        if(!product) {
+            req.flash('error', 'Stroe is not found');
+            res.redirect('/');
+        }
+
+        const { commentId, content } = req.body;
+        await ProductComment.update({
+            content: content,
+        }, {
+            where: { id: commentId }
+        });
 
         return res.json({ message: '성공적으로 수정하였습니다.' });
     } catch (error) {

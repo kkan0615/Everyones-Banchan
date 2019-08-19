@@ -10,8 +10,8 @@
                 <form method="GET">
                     <select name="order">
                         <option value="basic"></option>
-                        <option value="title_ASC">이름순</option>
-                        <option value="title_DESC">이름역순</option>
+                        <option value="name_ASC">이름순</option>
+                        <option value="name_DESC">이름역순</option>
                         <option value="stars_ASC">좋은평순</option>
                         <option value="stars_DESC">나쁜평순</option>
                         <option value="date_ASC">시간순</option>
@@ -45,7 +45,7 @@
                 <tbody>
                     <% stores.rows.forEach(store => { %>
                         <tr>
-                            <td><img src="/img/<%= store.img %>" alt="<%= store.img %>"></td>
+                            <td><img src="/uploads/<%= store.img %>" alt="<%= store.img %>"></td>
                             <th scope="row"><a href="/store/<%= store.url_key %>"><%= store.name %></a></td>
                             <td><%= store.manager.nickname %></td>
                             <td><%= store.createdAt %></td>
@@ -54,20 +54,19 @@
                 </tbody>
             </table>
             <div class="pagination">
-            <table id=pageTable>
-                <td><a href="#">&laquo;</a></td>
-                <td><a href="?page=1">1</a></td>
-                <td><a class="active" href="?page=2">2</a></td>
-                <td><a href="#">3</a></td>
-                <td><a href="#">4</a></td>
-                <td><a href="#">5</a></td>
-                <td><a href="#">6</a></td>
-                <td><a href="#">&raquo;</a></td>
-            </table>
+                <table id=pageTable>
+                    <td><a href="#">&laquo;</a></td>
+                    <td><a href="?page=1">1</a></td>
+                    <td><a class="active" href="?page=2">2</a></td>
+                    <td><a href="#">3</a></td>
+                    <td><a href="#">4</a></td>
+                    <td><a href="#">5</a></td>
+                    <td><a href="#">6</a></td>
+                    <td><a href="#">&raquo;</a></td>
+                </table>
             </div>
         </div>
         <div class="columnTen">
-            <p>hi two</p>
         </div>
     </body>
     <script>

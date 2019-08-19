@@ -6,15 +6,26 @@
     <body>
     <% include ./topNav %>
     <div class="content">
-        <form method="POST" enctype="multipart/form-data">
-            name <input type="text" name="name" value="name"><br>
-            url_key <input type="text" name="url_key" value="url_key"><br>
-            introduction <input type="textarea" name="introduction" value="title"><br>
-            kinds <input type="text" name="kinds" value="반찬"><br>
-            cover <input type="file" id="img" name="img" multiple><br>
-            <button type="submit">submit</button>
-            <button type="reset">reset</button>
-        </form>
+        <div class="create-form">
+            <form method="POST" enctype="multipart/form-data">
+                <label for="name">name</label>
+                <input type="text" name="name" value="name"><br>
+                <label for="url_key">url_key</label>
+                <input type="text" name="url_key" value="url_key"><br>
+                <label for="introduction">introduction</label>
+                <input type="textarea" name="introduction" value="title"><br>
+                <label for="kinds">kinds</label>
+                <input type="text" name="kinds" value="반찬"><br>
+                <label for="cover">cover</label>
+                <input type="file" id="img" name="img" multiple><br>
+                <button type="submit">submit</button>
+                <button type="reset">rest</button>
+                <div class="thumb">
+
+                </div>
+            </form>
+        </div>
+
     </div>
     </body>
 </html>

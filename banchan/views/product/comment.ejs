@@ -9,7 +9,7 @@
         <div class="columnFifteen">
         </div>
         <div class="columnSeventyFive">
-            <h1><%= product.name %></h1>
+            <h1><%= product.name %> (<%= comments.count %>)</h1>
             <div class="cont">
                 <div class="stars">
                     <form method="POST" enctype="multipart/form-data">
@@ -45,8 +45,8 @@
                             <button onclick="showEdit(<%= comment.id %>)">수정하기</button>
                             <p><%= comment.content %></p>
                             <div class="editComment" id="<%= comment.id %>">
-                                <textarea class=""  name="content"><%= comment.content %></textarea>
-                                <button onclick="">수정하기</button>
+                                <input type="text" id="content" name="content" value="<%= comment.content %>">
+                                <button onclick="editComments(<%= comment.id %>)">수정하기</button>
                             </div>
                         </li>
 
@@ -76,12 +76,30 @@
                 //xhr.send();
             }
 
+            function editComments(commentId) {
+                var content = document.getElementById("content").value;
+                var xhr = new XMLHttpRequest();
+                xhr.onload = function() {
+                    if(xhr.status === 200) {
+                        var result = JSON.parse(xhr.responseText).message;
+                        alert(result);
+                        location.reload();
+                    } else {
+                        console.error(xhr.responseText);
+                    }
+                };
+                xhr.open('put', '/store/<%= store.url_key %>/product/<%= product.id %>/comment')
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify({ commentId: commentId, content: content }));
+                //xhr.send();
+            }
+
             function showEdit(id) {
                 var div = document.getElementById(id);
                 if(div.style.display === 'none'){
-                    document.getElementById(id).style.display ='block';
+                    div.style.display = 'block';
                 } else {
-                    document.getElementById(id).style.display ='none';
+                    div.style.display = 'none';
                 }
             }
         </script>
@@ -99,6 +117,11 @@
                 font-size: 15px;
                 border: solid 2px grey;
                 border-radius: 12px;
+            }
+
+            .editComment input[type=text] {
+                width: 100%;
+                height: 50px;
             }
     </style>
     </body>

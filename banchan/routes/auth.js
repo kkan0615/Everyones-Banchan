@@ -13,7 +13,7 @@ router.post('/join', isNotLoggedIn, async(req, res, next) => {
         const exUser = await User.findOne({ where: { email } });
         if(exUser) {
             req.flash('joinError', 'This email has been registered');
-            return res.redirect('/join');
+            return res.redirect('/join/userJoin');
         }
         const bash = await bcrypt.hash(password, 12);
 
@@ -23,6 +23,32 @@ router.post('/join', isNotLoggedIn, async(req, res, next) => {
             password: bash,
             img: null,
             uuid: uuid(),
+        });
+
+        return res.redirect('/');
+    } catch(error) {
+        console.error(error);
+        return next(error);
+    }
+});
+
+router.post('/join/saler', isNotLoggedIn, async(req, res, next) => {
+    const { email, nick, password, img } = req.body;
+    try {
+        const exUser = await User.findOne({ where: { email } });
+        if(exUser) {
+            req.flash('joinError', 'This email has been registered');
+            return res.redirect('/join/saler');
+        }
+        const bash = await bcrypt.hash(password, 12);
+
+        await User.create({
+            email,
+            nickname: nick,
+            password: bash,
+            img: null,
+            uuid: uuid(),
+            isSaler: true,
         });
 
         return res.redirect('/');

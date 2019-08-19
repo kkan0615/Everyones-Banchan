@@ -47,9 +47,6 @@ router.get('/', async(req, res, next) => {
         } else {
             cart = null;
         }
-        console.log(cart);
-        console.log(cart.productList);
-
 
         return res.render('profileCart', {
             title: '장바구니()',
