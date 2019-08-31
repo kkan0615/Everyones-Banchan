@@ -30,7 +30,12 @@ router.get('/orders', isLoggedIn, async(req, res, next) => {
 });
 
 router.post('/orders', isLoggedIn, async(req, res, next) => {
+    try {
 
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
 });
 
 router.get('/validation', isLoggedIn, async(req, res, next) => {

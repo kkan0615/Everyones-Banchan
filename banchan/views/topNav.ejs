@@ -4,7 +4,7 @@
             <option value="food">반찬이름</option>
             <option value="store">가게이름</option>
         </select>
-        <input id="banchansearch" type="text" name="banchansearch" keyup="autocomplete()" placeholder="찾고싶은반찬을입력해주세요">
+        <input id="banchansearch" type="text" name="banchansearch" placeholder="찾고싶은반찬을입력해주세요">
         <button type="submit" name="search" onclick="search()">search</button>
     <div class="search-list">
 
@@ -53,7 +53,7 @@
   </div>
   <% if(user && user.id) { %>
   <div class="megaDropDown">
-    <button class="megaDropDownbtn">Dropdown
+    <button class="megaDropDownbtn"><%= user.nickname %>
         <i class="fa fa-caret-down"></i>
     </button>
     <div class="megaDropDown-content">
@@ -82,7 +82,7 @@
   </div>
   <% } else { %>
   <div class="megaDropDown">
-    <button class="megaDropDownbtn">Dropdown
+    <button class="megaDropDownbtn"> 모두의반찬
       <i class="fa fa-caret-down"></i>
     </button>
     <div class="megaDropDown-content">
@@ -105,26 +105,23 @@
 </div>
 
 <script>
-$("#banchansearch").change(function() {
-  var xhr = new XMLHttpRequest();
-    xhr.onload = function() {
-        if(xhr.status === 200) {
-            var result = JSON.parse(xhr.responseText).message;
-            alert(result);
-            location.reload();
-        } else {
-            console.error(xhr.responseText);
-        }
-    };
-    xhr.open('post', '/autocomplete');
+$("#banchansearch").keyup(function() {
+  var stand = $('select#search').val();
+  var word = $('#banchansearch').val();
+  if(word) {
+    var xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+          if(xhr.status === 200) {
+              var result = JSON.parse(xhr.responseText).result;
+          } else {
+              console.error(xhr.responseText);
+          }
+      };
+    xhr.open('POST', '/autocomplete');
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify({ stand: stand, word: word }));
-    //xhr.send();
+  }
 });
-
-function autocomplete() {
-
-}
 
 function openAddtionalNav() {
     document.getElementById("addtionalNav").style.width = "250px";

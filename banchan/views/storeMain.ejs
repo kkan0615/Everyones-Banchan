@@ -5,9 +5,15 @@
     </head>
     <body>
     <% include ./topNav %>
-    <% console.log(store.products[0] );
-     %>
+    <% console.log(store)%>
         <div class="columnFifteen">
+            <div class="sidevar">
+                <% if(user && user.id && store.managerId === user.id) { %>
+                    <a href="/store/<%= store.url_key %>/addProduct %>">제품추가하기</a>
+                <% } %>
+                <a href="/store/<%= store.url_key %>/comment">가게 후기</a>
+                <a href="/store/<%= store.url_key %>/setting">가게 수정</a>
+            </div>
             <fieldset>
                 <form method="GET">
                     <select name="order">
@@ -23,12 +29,9 @@
                     <button type="reset">reset</button>
                 </form>
             </fieldset>
-            <a href="/store/<%= store.url_key %>/addProduct %>">제품추가하기</a><br>
-            <a href="/store/<%= store.url_key %>/comment">가게 후기</a><br>
-            <a href="/store/<%= store.url_key %>/setting">가게 수정</a><br>
             <% if(user && user.id) { %>
-                <button type="button" onclick="like()">좋아요</button><br>
-                <button type="button" onclick="unlike()">좋아요취소</button><br>
+                <button class="like-button" type="button" onclick="like()">좋아요</button>
+                <button class="like-button" type="button" onclick="unlike()">좋아요취소</button>
             <% } else { %>
             <% } %>
             <%= %>
@@ -54,18 +57,21 @@
             </div>
         </div>
         <div class="columnTen">
-            <form method="POST" action="/store/<%= store.url_key %>/addToCart">
-                <select name="product">
-                    <% store.products.forEach(product => { %>
-                        <option value="<%= product.id %>"><%= product.name %></option>
-                    <% }); %>
-                </select>
-                <input type="number" name="quantity" value="quantity" min="1">
-                <select name="deliveryFee   ">
-                    <option value="<%= store.deliveryFee %>">일반배송</option>
-                </select>
-                <button type="submit" name="addToCart">장바구니</button>
-            </form>
+            <div class="toCart" id="toCart">
+                <form method="POST" action="/store/<%= store.url_key %>/addToCart">
+                    <select name="product">
+                        <% store.products.forEach(product => { %>
+                            <option value="<%= product.id %>"><%= product.name %></option>
+                        <% }) %>
+                    </select>
+                    수량:
+                    <input type="number" name="quantity" value="quantity" required>
+                    <select name="deliveryFee">
+                        <option value="<%= store.deliveryFee %>">일반배송</option>
+                    </select>
+                    <button type="submit" name="addToCart">장바구니</button>
+                </form>
+            </div>
         </div>
     <script>
         function like() {

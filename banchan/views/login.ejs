@@ -12,12 +12,15 @@
         <div class="join">
             <form method="POST" action="/auth/login">
                 <label for="email">Email</label>
-                <input type="email" name="email"><br>
+                <input type="email" name="email" value="<%= email %>" placeholder="Email"><br>
                 <label for="email">Password</label>
-                <input type="password" name="password"><br>
+                <input type="password" name="password" placeholder="password"><br>
+                <label for="saveEmail">아이디저장</label>
+                <input class="join-checkbox" type="checkbox" name="saveEmail" value="saveEmail"> <br>
                 <button type="submit">submit</button>
                 <button type="reset">rest</button>
             </form>
+            <p>아이디가 없으신가요? <a href="">회원가입하기</a></p>
         </div>
         <script>
         </script>

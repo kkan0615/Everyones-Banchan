@@ -71,12 +71,21 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
         }
 
         return req.login(user, (loginError) => {
+            if(req.body.saveEmail) {
+                console.log('********************************************************************');
+                res.cookie('email', req.body.email, {
+                    maxAge: 60 * 60 * 1000,
+                });
+            }
+
             if(loginError) {
                 console.error(loginError);
                 return next(loginError);
             }
             return res.redirect('/login');
         });
+
+
 
     }) (req, res, next);
 });

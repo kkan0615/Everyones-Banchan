@@ -15,17 +15,42 @@
             <p>Login require!</p>
         <% } %>
         <%= %>
-        <% if(recentStores) { %>
+        <h3>최근에 본 가게</h3>
+        <div class="scroll-rows">
+            <% if(recentStores) { %>
             <% recentStores.forEach(store => { %>
-                <a href="/store/<%= store.url_key %>"><%= store.name %></a>
+                <div class="scroll-rows-card">
+                    <a href="/store/<%= store.url_key %>"><img src="/uploads/<%= store.img %>" alt="<%= store.name %>"></a>
+                    <div class="scroll-rows-container">
+                        <p><%= store.name %></p>
+                    </div> <!-- scroll-rows-container end -->
+                </div> <!-- scroll-rows-card end -->
             <% }); %>
-            <% console.log(recentStores);
-            %>
-        <% } else { %>
-            <p>최근에 본 가게가 없습니다.</p>
-        <% } %>
-        <%= %>
-    </div>
+            <% } else { %>
+                <p>최근에 본 가게가 없습니다.</p>
+            <% } %>
+            <%= %>
+        </div> <!-- scroll-rows end -->
+
+        <h3>HOT DEALS!</h3>
+        <div class="scroll-rows">
+        <% console.log(newLists);
+         %>
+            <% if(newLists) { %>
+            <% newLists.forEach(product => { %>
+                <div class="scroll-rows-card">
+                    <a href=""><img src="/uploads/<%= product.store.img %>" alt="<%= product.name %>"></a>
+                    <div class="scroll-rows-container">
+                        <p><%= product.name %></p>
+                    </div> <!-- scroll-rows-container end -->
+                </div> <!-- scroll-rows-card end -->
+            <% }); %>
+            <% } else { %>
+                <p>최근에 본 가게가 없습니다.</p>
+            <% } %>
+            <%= %>
+        </div> <!-- scroll-rows end -->
+    </div> <!-- mainbody end -->
     <script>
     </script>
     </body>

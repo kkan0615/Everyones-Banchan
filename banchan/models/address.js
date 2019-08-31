@@ -49,6 +49,16 @@ module.exports = (sequelize, DataTypes) => (
         rn: {
             type: DataTypes.STRING(100),
             allowNull: false,
+        },
+        //latitude 위도
+        lat : {
+            type: DataTypes.FLOAT(),
+            allowNull: true,
+        },
+        //longitude 경도
+        lng: {
+            type: DataTypes.FLOAT(),
+            allowNull: true,
         }
     }, {
         timestamps: true,

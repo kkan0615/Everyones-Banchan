@@ -7,7 +7,7 @@ const fs = require('fs');
 const multer = require('multer');
 const schedule = require('node-schedule');
 
-const { isLoggedIn, isValidate, isSaler } = require('./middlewares');
+const { isLoggedIn, isValidate, isSaler, exStore, exProduct } = require('./middlewares');
 const { User, Store, Product, Food, StoreComment, ProductComment, CommentImage, ProductImage, Address, Order } = require('../models');
 
 /* 업로드 파일이 없을시 생성 */
@@ -154,6 +154,7 @@ const upload = multer({
     }),
 });
 
+/* Create Store - GET */
 router.get('/openStore', isLoggedIn, isValidate, isSaler, async(req, res, next) => {
     try {
         let store;
@@ -169,6 +170,10 @@ router.get('/openStore', isLoggedIn, isValidate, isSaler, async(req, res, next) 
     }
 });
 
+/*
+    Create Store - POST
+    1. Add data to database
+ */
 router.post('/openStore', isLoggedIn, isValidate, isSaler, upload.single('img'), async(req, res, next) => {
     try {
         if(!req.body.name || !req.body.url_key || !req.body.deliveryFee || !req.body.quickDeliveryFee) {
@@ -182,7 +187,7 @@ router.post('/openStore', isLoggedIn, isValidate, isSaler, upload.single('img'),
 
         const regType = /^[A-Za-z0-9+]*$/;
         if(!regType.test(req.body.url_key)) {
-            req.flash('error', '이미 존재하는 가게입니다.');
+            req.flash('error', 'url 형식에 어긋났습니다.');
             return res.redirect('/store/openstore');
         }
 
@@ -209,6 +214,8 @@ router.post('/openStore', isLoggedIn, isValidate, isSaler, upload.single('img'),
             sggNm: req.body.sggNm,
             emdNm: req.body.emdNm,
             rn:  req.body.rn,
+            lat: req.body.lat,
+            lng: req.body.lng,
         });
 
         const store = await Store.create({
@@ -229,7 +236,36 @@ router.post('/openStore', isLoggedIn, isValidate, isSaler, upload.single('img'),
     }
 });
 
+/*
+    Check url
+    return false if there is same name
+*/
 router.post('/openStore/checkUrl', isLoggedIn, isValidate, isSaler, async(req, res, next) => {
+    try {
+        if(!req.body.url_key) {
+            res.json({ result: '빈칸을 채워주세요' });
+        }
+
+        const exStore = await Store.findOne({
+            where: { url_key: req.body.url_key }
+        });
+
+        if( !exStore ){
+            res.json({ result: '가능한 url 주소 입니다.' });
+        } else {
+            res.json({ result: '이미 존재하는 url 주소입니다.' });
+        }
+
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+});
+
+/*
+    auto complete url for convinience
+*/
+router.post('/openStore/autoCreate', isLoggedIn, isValidate, isSaler, async(req, res, next) => {
     try {
         if(!req.body.url_key) {
             res.json({ result: '빈칸을 채워주세요' });
@@ -269,6 +305,8 @@ router.get('/:url_key', async(req, res, next) => {
                 }],
             }, {
                 model: StoreComment,
+            }, {
+                model: Address,
             }],
             where: { url_key: req.params.url_key },
         });
@@ -448,9 +486,7 @@ router.get('/:url_key/editProduct', isLoggedIn, isValidate, isSaler, async(req, 
 });
 
 /* 상품 추가하기 - POST */
-router.post('/:url_key/addProduct', isLoggedIn, isValidate, isSaler, upload.array('img', 10), async(req, res, next) => {
-    console.log(req.files);
-
+router.post('/:url_key/addProduct', isLoggedIn, exStore, isValidate, isSaler, upload.array('img', 10), async(req, res, next) => {
     try {
         const store = await Store.findOne({
             include: [{
@@ -568,7 +604,7 @@ router.post('/:url_key/editProduct', isLoggedIn, isValidate, isSaler, async(req,
 });
 
 /* Product detail - GET */
-router.get('/:url_key/product/:id', async(req, res, next) => {
+router.get('/:url_key/product/:id', exStore, async(req, res, next) => {
     try {
         const store = await Store.findOne({
             include:[{
@@ -576,14 +612,7 @@ router.get('/:url_key/product/:id', async(req, res, next) => {
                 as: 'manager',
             }, {
                 model: Product,
-                include: [{
-                    model: ProductComment,
-                },{
-                    model: Food,
-                }],
                 where: { id: req.params.id },
-            }, {
-                model: StoreComment,
             }],
             where: { url_key: req.params.url_key },
         });
@@ -688,29 +717,9 @@ const upload2 = multer({
 });
 
 /* 제품 댓글 생성 - POST */
-router.post('/:url_key/product/:id/comment',isLoggedIn, upload2.array('img'), async(req, res, next) => {
+router.post('/:url_key/product/:id/comment', isLoggedIn, exStore, exProduct, upload2.array('img'), async(req, res, next) => {
     try {
-        const store = await Store.findOne({
-            include:[{
-                model: User,
-                as: 'manager',
-            }],
-            where: { url_key: req.params.url_key },
-        });
-
-        if(!store) {
-            req.flash('error', 'Stroe is not found');
-            res.redirect('/');
-        }
-
-        const product = await Product.findOne({
-            where: { id: req.params.id }
-        });
-
-        if(!product) {
-            req.flash('error', 'Stroe is not found');
-            res.redirect('/');
-        }
+        const productId = req.params.id;
 
         const exCommet = await ProductComment.findOne({
             where: { authorId: req.user.id }
@@ -718,7 +727,7 @@ router.post('/:url_key/product/:id/comment',isLoggedIn, upload2.array('img'), as
 
         if(exCommet) {
             req.flash('error', '한번씩만 쓰기가능합니다.');
-            return res.redirect('/store/'+store.url_key+'/product/'+product.id+'/comment');
+            return res.redirect('/store/'+req.params.url_key+'/product/'+productId+'/comment');
         }
 
         const { content, stars } = req.body;
@@ -727,7 +736,7 @@ router.post('/:url_key/product/:id/comment',isLoggedIn, upload2.array('img'), as
             content: content,
             stars: stars,
             authorId: req.user.id,
-            productId: product.id,
+            productId: productId,
         });
 
         if(req.files[0]) {
@@ -747,19 +756,19 @@ router.post('/:url_key/product/:id/comment',isLoggedIn, upload2.array('img'), as
         }
 
         const avg = await ProductComment.findAll({
-            attributes:[
-                [sequelize.fn('AVG', sequelize.col('stars')), 'stars_AVG']
-            ],
-            group: 'stars'
+            attributes: [ [ProductComment.sequelize.fn('AVG', ProductComment.sequelize.col('stars')), 'starsComment']],
+            where: { productId: productId }
         });
+
+        console.log(avg);
 
         await Product.update({
-            stars: avg[0].dataValues.stars_AVG,
+            stars: avg[0].dataValues.starsComment,
         }, {
-            where: { id: req.params.id }
+            where: { id: productId }
         });
 
-        return res.redirect('/store/'+store.url_key+'/product/'+product.id+'/comment');
+        return res.redirect('/store/'+req.params.url_key+'/product/'+productId+'/comment');
     } catch (error) {
         console.error(error);
         next(error);
@@ -767,34 +776,14 @@ router.post('/:url_key/product/:id/comment',isLoggedIn, upload2.array('img'), as
 });
 
 /* 제품 댓글 삭제 - DELETE */
-router.delete('/:url_key/product/:id/comment', isLoggedIn, async(req, res, next) => {
+router.delete('/:url_key/product/:id/comment', exStore, exProduct, isLoggedIn, async(req, res, next) => {
     try {
-        const store = await Store.findOne({
-            include:[{
-                model: User,
-                as: 'manager',
-            }],
-            where: { url_key: req.params.url_key },
-        });
 
-        if(!store) {
-            return res.json({ message: '가게 정보가 존재하지 않습니다.' });
-        }
-
-        const product = await Product.findOne({
-            where: { id: req.params.id }
-        });
-
-        if(!product) {
-            req.flash('error', 'Stroe is not found');
-            res.redirect('/');
-        }
-
-
+        const productId = req.params.id;
         const { commentId } = req.body;
 
         await ProductComment.destroy({
-            where: { id: commentId, productId: product.id }
+            where: { id: commentId, productId: productId }
         });
 
         const commentImages = await CommentImage.findAll({
@@ -929,6 +918,7 @@ router.get('/:url_key/comment', async(req, res, next) => {
 
 router.post('/:url_key/comment', isLoggedIn ,async(req, res, next) => {
     try {
+
         const store = await Store.findOne({
             include:[{
                 model: User,
@@ -942,14 +932,24 @@ router.post('/:url_key/comment', isLoggedIn ,async(req, res, next) => {
             res.redirect('/');
         }
 
-        const storeComment = await StoreComment.create({
+        await StoreComment.create({
             content: req.body.content,
             stars: parseInt(req.body.star),
             authorId: req.user.id,
             storeId: store.id,
         });
 
-        //return res.json({ comment : storeComment });
+        const avg = await StoreComment.findAll({
+            attributes: [ [StoreComment.sequelize.fn('AVG', StoreComment.sequelize.col('stars')), 'starsComment']],
+            where: { storeId: store.id }
+        });
+
+        await Store.update({
+            stars: avg[0].dataValues.starsComment,
+        }, {
+            where: { id: store.id }
+        });
+
         return res.redirect('/store/'+store.url_key+'/comment');
     } catch (error) {
         console.error(error);

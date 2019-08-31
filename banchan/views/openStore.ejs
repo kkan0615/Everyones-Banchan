@@ -15,6 +15,7 @@
         <div class="create-form">
 
         </div>
+        <div id="map" class="map"></div>
             <table>
                 <colgroup>
                     <col style="width:20%"><col>
@@ -92,6 +93,13 @@
                         <td><input type="text" id="rn" name="rn" style="width:85%"></td>
                     </tr>
                     <tr>
+                        <th>경도 위도</th>
+                        <td>
+                            <input type="text" id="lat" name="lat" readonly style="width:85px">
+                            <input type="text" id="lng" name="lng" readonly style="width:85px">
+                        </td>
+                    </tr>
+                    <tr>
                         <th></th>
                         <td>
                             <button type="submit">submit</button>
@@ -102,7 +110,44 @@
 		    </table>
         </form>
     </div>
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=af513262ea2a9b1687b6980d2fb4256d"></script>
     <script>
+        function kakaoMap() {
+            var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+            mapOption = {
+                center: new kakao.maps.LatLng(37.604393385110114, 127.03132424971523), // 지도의 중심좌표
+                level: 3 // 지도의 확대 레벨
+            };
+
+            var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+            // 지도를 클릭한 위치에 표출할 마커입니다
+            var marker = new kakao.maps.Marker({
+                // 지도 중심좌표에 마커를 생성합니다
+                position: map.getCenter()
+            });
+            // 지도에 마커를 표시합니다
+            marker.setMap(map);
+
+            //지도 zoom 기능을 활성화 시킵니다.
+            map.setZoomable(true);
+
+            // 지도에 클릭 이벤트를 등록합니다
+            // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
+            kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+
+                // 클릭한 위도, 경도 정보를 가져옵니다
+                var latlng = mouseEvent.latLng;
+
+                // 마커 위치를 클릭한 위치로 옮깁니다
+                marker.setPosition(latlng);
+
+                // 경도 위도에 값 넣기
+                document.getElementById('lat').value = latlng.getLat();
+                document.getElementById('lng').value = latlng.getLng();
+            });
+        }
+
         function checkUrl_key() {
             var url_key =  document.getElementById('url_key').value;
             var xhr = new XMLHttpRequest();
@@ -118,9 +163,10 @@
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify({ url_key: url_key }));
         }
+
         function goPopup(){
 	        // 호출된 페이지(jusopopup.jsp)에서 실제 주소검색URL(http://www.juso.go.kr/addrlink/addrLinkUrl.do)를 호출하게 됩니다.
-            var pop = window.open("/popup/jusoPopup.jsp","pop","width=570,height=420, scrollbars=yes, resizable=yes");
+            var pop = window.open("http://www.juso.go.kr/addrlink/addrCoordUrl.do","pop","width=570,height=420, scrollbars=yes, resizable=yes");
 
             // 모바일 웹인 경우, 호출된 페이지(jusopopup.jsp)에서 실제 주소검색URL(http://www.juso.go.kr/addrlink/addrMobileLinkUrl.do)를 호출하게 됩니다.
             //var pop = window.open("/popup/jusoPopup.jsp","pop","scrollbars=yes, resizable=yes");
@@ -140,6 +186,14 @@
             document.form.addrDetail.value = addrDetail;
             document.form.zipNo.value = zipNo;
         }
+        kakaoMap();
     </script>
+    <style>
+        .map {
+            float: right;
+            width: 500px;
+            height: 400px;
+        }
+    </style>
     </body>
 </html>

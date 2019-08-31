@@ -10,35 +10,6 @@ const { User, Store, Product, Food, StoreComment, ProductComment, CommentImage, 
 
 router.get('/', async(req, res, next) => {
     try {
-        let user;
-        if(req.query.id) {
-            user = await User.findOne({
-                include: [{
-                    model: Store,
-                }, {
-                    model: StoreComment,
-                    include: {
-                        model: CommentImage,
-                    }
-                }, {
-                    model: ProductComment,
-                    include: {
-                        model: CommentImage,
-                    },
-                }],
-                where: { id: req.query.id }
-            });
-
-            if(!user) {
-                req.flash('error', 'User is not found');
-                res.redirect('/');
-            }
-
-            if(user.id != req.user.id) {
-                req.flash('error', 'You are not allowed to see this page');
-                res.redirect('/');
-            }
-        }
 
         // cart 변경하기
         let cart;

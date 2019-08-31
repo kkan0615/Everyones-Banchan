@@ -1,3 +1,5 @@
+const { Store, Product } = require('../models');
+
 exports.isLoggedIn = (req, res, next) => {
     if (req.isAuthenticated()) {
         next();
@@ -15,7 +17,7 @@ exports.isNotLoggedIn = (req, res, next) => {
 };
 
 exports.isAdmain = (req, res, next) => {
-    if(req.user && req.user.isAdmin == true) {
+    if(req.isAuthenticated() && req.user.isAdmin == true) {
         next();
     } else {
         console.log(req.user);
@@ -24,7 +26,7 @@ exports.isAdmain = (req, res, next) => {
 };
 
 exports.isSaler = (req, res, next) => {
-    if(req.user && req.user.isSaler == true) {
+    if(req.isAuthenticated() && req.user.isSaler == true) {
         next();
     } else {
         console.log(req.user);
@@ -38,5 +40,41 @@ exports.isValidate = (req, res, next) => {
     } else {
         console.log(req.user);
         res.status(402).send('You are not validated yet.');
+    }
+};
+
+/* Check store can be found */
+exports.exStore = async(req, res, next) => {
+    try {
+        const store = await Store.findOne({
+            where: { url_key: req.params.url_key }
+        });
+
+        if(!store) {
+            res.status(404).send('Store is not found');
+            return res.redirect('/');
+        }
+        next();
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+};
+
+/* Check product can be found */
+exports.exProduct = async(req, res, next) => {
+    try {
+        const product = await Product.findOne({
+            where: { id: req.params.id }
+        });
+
+        if(!product) {
+            res.status(404).send('Product is not found');
+            return res.redirect('/');
+        }
+        next();
+    } catch (error) {
+        console.error(error);
+        next(error);
     }
 };

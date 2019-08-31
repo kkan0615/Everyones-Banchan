@@ -5,7 +5,6 @@ const path = require('path');
 const session = require('express-session'); // npm i express-session [ https://www.npmjs.com/package/express-session ]
 const flash = require('connect-flash');
 const passport = require('passport'); // npm i passport, npm i passport-local(for local)
-require('dotenv').config();
 const { sequelize } = require('./models');
 const passportConfig = require('./passport');
 const pageRouter = require('./routes/page');
@@ -23,6 +22,8 @@ const searchRouter = require('./routes/search');
 const logger = require('./logger');
 const helmet = require('helmet');
 const hpp = require('hpp');
+const RedisStore = require('connect-redis')(session); // npm i redis-connect
+require('dotenv').config();
 
 const app = express();
 sequelize.sync();
@@ -35,6 +36,14 @@ const sessionMiddleware = session({
       httpOnly: true,
       secure: false,
     },
+    /*
+    **** Open this when you want to use redis ****
+    store:new RedisStore({
+        host: process.env.REDIS_HOST,
+        port: process.env.REDIS_PORT,
+        pass:process.env.REDIS_PASSWORD,
+    }),
+    */
 });
 
 passportConfig(passport);

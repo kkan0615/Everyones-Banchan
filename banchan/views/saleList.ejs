@@ -21,7 +21,7 @@
                         <tr>
                             <td><img src="<%= product.img %>" alt="<%= product.img %>"></td>
                             <th scope="row"><a href="/store/<%= product.store.url_key %>/product/<%= product.id %>"><%= product.name %></a></td>
-                            <th scope="row"><%= product.orginalPrice %></a></td>
+                            <th scope="row"><%= product.salePrice %></a></td>
                             <td id="time" data-start="<%= product.startSale %>" data-end="<%= product.endSale %>" ></td>
                         </tr>
                     <% }); %>

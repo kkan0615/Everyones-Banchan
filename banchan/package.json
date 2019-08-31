@@ -22,6 +22,7 @@
     "bcryptjs": "^2.4.3",
     "connect": "^3.7.0",
     "connect-flash": "^0.1.1",
+    "connect-redis": "^3.4.2",
     "cookie-parser": "^1.4.4",
     "cross-env": "^5.2.0",
     "dotenv": "^8.0.0",
