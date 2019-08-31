@@ -2,10 +2,15 @@
 1. Korea Side-dish shopping mall Project
 2. Individual Project
 
-## Goal
-1. Design MySQL database.
-2. Build GCP infrastructure.
+# Used tools
+| 분야 | 가운데 정렬 |
+|:--------:|:--------:|
+| 서버 | AWS |
+| API 서버 | Node js |
+| 배포 | GIT |
+| DB | MySQL |
+| Template | ejs |
+| CSS | CSS3 |
 
-## Used Modules
-1. Express
-2. cookie-parser
+# Map API
+1. Kakao Map http://apis.map.kakao.com/
