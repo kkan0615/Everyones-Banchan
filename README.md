@@ -9,7 +9,7 @@
 | API 서버 | Node js |
 | 배포 | GIT |
 | DB | MySQL |
-| Template |  |
+| Template | ejs |
 | CSS | CSS3 |
 
 # Map API
