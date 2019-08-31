@@ -9,6 +9,7 @@
 | API 서버 | Node js |
 | 배포 | GIT |
 | DB | MySQL |
+| CSS | CSS3 |
 
 # Map API
 1. Kakao Map http://apis.map.kakao.com/
