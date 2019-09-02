@@ -543,24 +543,20 @@ body {
   height: 30px;
 }
 
-/* Pagination links */
+.pagination {
+  display: inline-block;
+}
+
 .pagination a {
-    color: black;
-    float: left;
-    text-align: center;
-    padding: 8px 16px;
-    text-decoration: none;
-    transition: background-color .3s;
+  color: black;
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
 }
 
-/* Style the active/current link */
-.pagination a.active {
-  background-color: rgb(253, 167, 155);
-  color: white;
+.pagination a:hover {
+  background-color: #f1f1f1;
 }
-
-/* Add a grey background color on mouse-over */
-.pagination a:hover:not(.active) {background-color: #ddd;}
 
 @media screen and (max-height: 600) {
     .addtionalNav { padding-top: 15px; }
@@ -1092,6 +1088,35 @@ input.star:checked ~ .rev-box{
 
 .editComment {
   display: none;
+}
+
+.list-row {
+
+}
+
+.list-row,
+.list-row > .list-col {
+  padding: 8px;
+}
+
+.list-col {
+  float: left;
+  width: 25%;
+}
+
+/* Clear floats after rows */
+.list-col:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Content */
+.list-content {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  text-align: center;
+  background-color: #f1f1f1;
 }
 
 @media screen and (min-width: 641px) and (max-width: 960px) {

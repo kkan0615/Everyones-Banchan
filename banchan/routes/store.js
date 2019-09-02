@@ -156,18 +156,11 @@ const upload = multer({
 
 /* Create Store - GET */
 router.get('/openStore', isLoggedIn, isValidate, isSaler, async(req, res, next) => {
-    try {
-        let store;
-        return res.render( 'openStore', {
-            title: 'Open new store',
-            user: req.user,
-            store: store,
-            openError: req.flash('error'),
-        });
-    } catch (error) {
-        console.error(error);
-        next(error);
-    }
+    return res.render( 'openStore', {
+        title: 'Open new store',
+        user: req.user,
+        openError: req.flash('error'),
+    });
 });
 
 /*
@@ -181,15 +174,15 @@ router.post('/openStore', isLoggedIn, isValidate, isSaler, upload.single('img'),
             return res.redirect('/store/openStore');
         }
 
-        const exStore = await Store.findOne({
-            where: { url_key: req.body.url_key }
-        });
-
         const regType = /^[A-Za-z0-9+]*$/;
         if(!regType.test(req.body.url_key)) {
             req.flash('error', 'url 형식에 어긋났습니다.');
             return res.redirect('/store/openstore');
         }
+
+        const exStore = await Store.findOne({
+            where: { url_key: req.body.url_key }
+        });
 
         if(exStore) {
             req.flash('error', '이미 존재하는 가게입니다.');
@@ -251,9 +244,9 @@ router.post('/openStore/checkUrl', isLoggedIn, isValidate, isSaler, async(req, r
         });
 
         if( !exStore ){
-            res.json({ result: '가능한 url 주소 입니다.' });
+            return res.json({ result: '가능한 url 주소 입니다.' });
         } else {
-            res.json({ result: '이미 존재하는 url 주소입니다.' });
+            return res.json({ result: '이미 존재하는 url 주소입니다.' });
         }
 
     } catch (error) {

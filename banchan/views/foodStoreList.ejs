@@ -11,27 +11,17 @@
             </fieldset>
         </div>
         <div class="columnSeventyFive">
-            <p>제품수 : <%= stores.count %></p>
-            <table class="table_list">
-                <thead>
-                    <tr>
-                        <th scope="cols">img</th>
-                        <th scope="cols">title</th>
-                        <th scope="cols">author</th>
-                        <th scope="cols">timestamp</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% stores.rows.forEach(store => { %>
-                        <tr>
-                            <td><img src="/img/<%= store.img %>" alt="<%= store.img %>"></td>
-                            <th scope="row"><a href="/store/<%= store.url_key %>"><%= store.name %></a></td>
-                            <td><%= store.manager.nickname %></td>
-                            <td><%= store.createdAt %></td>
-                        </tr>
-                    <% }); %>
-                </tbody>
-            </table>
+            <p style="text-align: center;">제품수 : <%= products.count %></p>
+            <div class="list-row">
+                <% products.rows.forEach(product => { %>
+                    <div class="list-col">
+                        <div class="list-content">
+                            <img src="/img/<%= product.img %>" alt="<%= product.img %>">
+                            <a href="/store/<%= product.store.url_key %>/product/<%= product.id %>"><%= product.name %>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
             <div class="pagination">
                 <table id=pageTable>
                     <td><a href="#">&laquo;</a></td>

@@ -48,9 +48,6 @@ const upload = multer({
 
 router.get('/makeFood', isLoggedIn, isValidate, isSaler, async(req, res, next) => {
     try {
-
-        let store;
-        //For edit
         if(req.query.store) {
             store = await Store.findOne({
                 where: {id: req.query.store},
@@ -135,22 +132,25 @@ router.get('/:url_key', async(req, res, next) => {
 
 router.get('/:url_key/storeList', async(req, res, next) => {
     try {
-        const stores = await Store.findAndCountAll({
+        const products = await Product.findAndCountAll({
             include: [{
                 model: Food,
                 where: { url_key: req.params.url_key }
             }, {
-                model: User,
-                as: 'manager',
-            },{
-                model: Address,
+                model: Store,
             }],
+            order: [
+                ['orginalPrice', 'ASC'],
+                ['salePrice', 'ASC'],
+                ['stars', 'DESC']
+            ]
         });
+        console.log(products);
 
         return res.render('foodStoreList', {
             title: '가게 리스트',
             user: req.user,
-            stores: stores,
+            products: products,
         });
     } catch (error) {
         console.error(error);

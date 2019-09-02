@@ -16,7 +16,7 @@ exports.isNotLoggedIn = (req, res, next) => {
     }
 };
 
-exports.isAdmain = (req, res, next) => {
+exports.isAdmin = (req, res, next) => {
     if(req.isAuthenticated() && req.user.isAdmin == true) {
         next();
     } else {
