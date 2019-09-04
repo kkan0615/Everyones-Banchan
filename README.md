@@ -6,7 +6,7 @@
 |  | Tool |
 |:--------:|:--------:|
 | Server | AWS |
-| API Server | Node js |
+| API Server | Nginx|
 | 배포 | Git |
 | DB | MySQL |
 | Template | ejs |
