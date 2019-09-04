@@ -2,12 +2,20 @@
 1. Korea Side-dish shopping mall Project
 2. Individual Project
 
+## 기능
+1. 간단한 쇼핑몰 구현(장바구니, 최근본 가게들)
+2. Kakao Map을 통해 주변 가게 정보를 얻는다.
+
+## Fucntion
+1. desgin simple Shopping
+2. Through Kakao Map, get information of stores near location.
+
 # Used tools
-| 분야 | 가운데 정렬 |
+|  | Tool |
 |:--------:|:--------:|
-| 서버 | AWS |
-| API 서버 | Node js |
-| 배포 | GIT |
+| Server | AWS |
+| API Server | Node js |
+| 배포 | Git |
 | DB | MySQL |
 | Template | ejs |
 | CSS | CSS3 |
