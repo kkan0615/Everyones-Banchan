@@ -558,6 +558,8 @@ body {
   background-color: #f1f1f1;
 }
 
+.pagination a:
+
 @media screen and (max-height: 600) {
     .addtionalNav { padding-top: 15px; }
     .addtionalNav a { font-size: 18px; }
