@@ -333,44 +333,32 @@ router.get('/:url_key', async(req, res, next) => {
     }
 });
 
-router.post('/:url_key/addToCart', async(req, res, next) => {
+router.post('/:url_key/addToCart', exStore, async(req, res, next) => {
     try {
-        const store = await Store.findOne({
-            include:[{
-                model: User,
-                as: 'manager',
-            }, {
-                model: Product,
-                include: [{
-                    model: ProductComment,
-                },{
-                    model: Food,
-                }],
-            }, {
-                model: StoreComment,
-            }],
-            where: { url_key: req.params.url_key },
-        });
+        //product는 Id로 온다. quanity는 integer
+        const { productId, quantity } = req.body;
 
-        if(!store) {
-            req.flash('error', 'Stroe is not found');
-            res.redirect('/');
-        }
-
-        let product = {};
-        product.product = await Product.findOne({
+        const exProduct = await Product.findOne({
             include: {
                 model: Store,
             },
-            where: { id: req.body.product }
-        });
+            where: { id: productId }
+        })
+
+        if(!exProduct) {
+            req.flash('error', '잘못된 접근입니다.');
+            req.redirect('/');
+        }
+
+        let product = {};
+        product.product = exProduct;
 
         if(!req.session.cart) {
             req.session.cart = {};
             req.session.cart.productList = [];
         }
 
-        product.quantity = req.body.quantity;
+        product.quantity = quantity;
         /*
         const exSame = req.session.cart.productList.filter( (product) =>{
             return product.product.storeId == store.id
@@ -961,10 +949,12 @@ router.post('/:url_key/like', isLoggedIn, async(req, res, next) => {
         });
 
         if(!store) {
+            //res.status(401).redirect('/');
             return res.redirect('/');
         }
 
         await store.addStoreLiker(req.user.id);
+
 
         return res.json({ result: 'success' });
     } catch (error) {

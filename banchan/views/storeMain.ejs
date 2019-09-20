@@ -29,7 +29,7 @@
                     <button type="reset">reset</button>
                 </form>
             </fieldset>
-            <% if(user && user.id) { %>
+            <% if (user && user.id) { %>
                 <button class="like-button" type="button" onclick="like()">좋아요</button>
                 <button class="like-button" type="button" onclick="unlike()">좋아요취소</button>
             <% } else { %>
@@ -50,7 +50,7 @@
                                 <p class="Itemnew">세일 가격: <%= product.salePrice %></p>
                             <% } %>
                             <input type="number" name="quantity" value="quantity" min="1">
-                            <button type="button">Add to Cart</button>
+                            <button type="button" onclick="addProCart(<%= product.id %>)">Add to Cart</button>
                         </div>
                     </div>
                 <% }); %>
@@ -59,7 +59,7 @@
         <div class="columnTen">
             <div class="toCart" id="toCart">
                 <form method="POST" action="/store/<%= store.url_key %>/addToCart">
-                    <select name="product">
+                    <select name="productId">
                         <% store.products.forEach(product => { %>
                             <option value="<%= product.id %>"><%= product.name %></option>
                         <% }) %>
@@ -121,6 +121,23 @@
             <% } else { %>
                 alert('You should login');
             <% } %>
+        }
+
+        function addProCart(productId) {
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+                if(xhr.status === 200) {
+                    var result = JSON.parse(xhr.responseText).result;
+                    alert(result);
+                    location.reload();
+                } else {
+                    console.error(xhr.responseText);
+                }
+            };
+            xhr.open('POST','/store/<%= store.url_key %>/addToCart');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({ url_key: str, productId }));
+            //xhr.send();
         }
     </script>
     </body>

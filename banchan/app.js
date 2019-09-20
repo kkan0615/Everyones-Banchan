@@ -7,13 +7,6 @@ const flash = require('connect-flash');
 const passport = require('passport'); // npm i passport, npm i passport-local(for local)
 const { sequelize } = require('./models');
 const passportConfig = require('./passport');
-const pageRouter = require('./routes/page');
-const authRouter = require('./routes/auth');
-const storeRouter = require('./routes/store');
-const foodRouter = require('./routes/food');
-const profileRouter = require('./routes/profile');
-const cartRouter = require('./routes/cart');
-const saleRouter = require('./routes/saleList');
 const sse = require('./socket/sse');
 const webSocket = require('./socket/socket');
 const checkSale = require('./routes/checkSale');
@@ -24,6 +17,15 @@ const helmet = require('helmet');
 const hpp = require('hpp');
 const RedisStore = require('connect-redis')(session); // npm i redis-connect
 require('dotenv').config();
+
+const pageRouter = require('./routes/page');
+const authRouter = require('./routes/auth');
+const storeRouter = require('./routes/store');
+const foodRouter = require('./routes/food');
+const profileRouter = require('./routes/profile');
+const cartRouter = require('./routes/cart');
+const saleRouter = require('./routes/saleList');
+const mapRouter = require('./routes/map');
 
 const app = express();
 sequelize.sync();
@@ -69,6 +71,8 @@ app.use(sessionMiddleware);
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+
+/* SET ROUTER */
 app.use('/', pageRouter);
 app.use('/uploads', express.static('uploads'));
 app.use('/auth', authRouter);
@@ -79,6 +83,7 @@ app.use('/cart', cartRouter);
 app.use('/sale', saleRouter);
 app.use('/order', orderRouter);
 app.use('/search', searchRouter);
+app.use('/map', mapRouter);
 
 const server = app.listen(app.get('port'), () => {
     console.log(app.get('port'), 'is wating you!');
